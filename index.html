@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>냠냠 튼튼 점검 대장 🍽️</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
+        
+        body {
+            font-family: 'Jua', sans-serif;
+            background-color: #FFF9E6; 
+            color: #5D4037;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        h1 { color: #FF8C00; font-size: 32px; }
+        
+        .setup-section, .main-section, .edit-section { display: none; }
+        .active { display: block; }
+        
+        select {
+            font-family: 'Jua', sans-serif; font-size: 18px; padding: 5px;
+            border: 2px solid #FFCA28; border-radius: 10px; margin: 5px;
+        }
+
+        textarea {
+            width: 90%; height: 100px; border: 2px dashed #FFCA28;
+            border-radius: 10px; padding: 10px; font-family: 'Jua', sans-serif; font-size: 16px; margin-top: 10px;
+        }
+
+        #allEditStudentInput {
+            width: 90%; height: 250px; border: 2px dashed #FFCA28;
+            border-radius: 10px; padding: 10px; font-family: 'Jua', sans-serif; font-size: 15px; margin-top: 10px;
+            text-align: left;
+        }
+        
+        button {
+            font-family: 'Jua', sans-serif;
+            border: none; padding: 10px 15px; border-radius: 15px;
+            cursor: pointer; font-size: 16px; margin: 5px; transition: 0.2s;
+        }
+        button:hover { transform: scale(1.05); }
+        
+        .btn-save { background-color: #FFD54F; color: #5D4037; }
+        .btn-finish { background-color: #4CAF50; color: white; margin-top: 20px; font-size: 18px;}
+        .btn-reset { background-color: #EF9A9A; color: white; font-size: 14px; }
+        .btn-deduct { background-color: #CE93D8; color: white; padding: 5px 10px; font-size: 14px;}
+        .btn-edit { background-color: #81D4FA; color: #0277BD; padding: 5px 10px; font-size: 16px; border-radius: 10px; }
+        .btn-all-o { background-color: #E8F5E9; color: #2E7D32; border: 2px solid #4CAF50; font-size: 14px; padding: 5px 12px; margin-bottom: 10px; }
+        
+        /* 세련된 도형 버튼 스타일 */
+        .btn-check { 
+            width: 44px; height: 44px; border-radius: 12px; 
+            background-color: #ffffff; border: 2px solid #e0e0e0;
+            display: inline-flex; align-items: center; justify-content: center; padding: 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04); cursor: pointer; transition: 0.15s;
+            margin: 0 3px;
+        }
+        .btn-check:hover { transform: scale(1.08); }
+
+        .shape-circle {
+            width: 18px; height: 18px; border: 3px solid #ccc; border-radius: 50%; box-sizing: border-box;
+        }
+        .shape-triangle {
+            width: 0; height: 0; 
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 17px solid #ccc;
+            position: relative; top: 1px;
+        }
+        .shape-cross {
+            width: 18px; height: 18px; position: relative;
+        }
+        .shape-cross::before, .shape-cross::after {
+            content: ''; position: absolute; top: 7px; left: -1px; width: 20px; height: 4px; background-color: #ccc; border-radius: 2px;
+        }
+        .shape-cross::before { transform: rotate(45deg); }
+        .shape-cross::after { transform: rotate(-45deg); }
+
+        .btn-check.selected-O { background-color: #E8F5E9; border-color: #4CAF50; box-shadow: 0 4px 8px rgba(76,175,80,0.25); }
+        .btn-check.selected-O .shape-circle { border-color: #4CAF50; background-color: #4CAF50; }
+
+        .btn-check.selected-A { background-color: #FFF3E0; border-color: #FF9800; box-shadow: 0 4px 8px rgba(255,152,0,0.25); }
+        .btn-check.selected-A .shape-triangle { border-bottom-color: #FF9800; }
+
+        .btn-check.selected-X { background-color: #FFEBEE; border-color: #F44336; box-shadow: 0 4px 8px rgba(244,67,54,0.25); }
+        .btn-check.selected-X .shape-cross::before, .btn-check.selected-X .shape-cross::after { background-color: #F44336; }
+
+        input[type="date"] {
+            font-family: 'Jua', sans-serif; font-size: 18px; padding: 5px;
+            border: 2px solid #FFCA28; border-radius: 10px; margin-bottom: 5px;
+        }
+
+        .header-controls { 
+            display: flex; justify-content: space-around; align-items: center; 
+            margin-bottom: 15px; flex-wrap: wrap; gap: 10px;
+        }
+        .class-selector-group { display: flex; align-items: center; gap: 5px; }
+
+        table { width: 100%; border-collapse: separate; border-spacing: 0 4px; margin-top: 5px; }
+        th, td { padding: 8px 5px; vertical-align: middle; }
+        th { color: #F57C00; font-size: 18px; border-bottom: 2px solid #FFCA28; background: #fff; }
+        
+        /* 반별 색상 및 학반 구분 줄 색상 통일 */
+        .row-class-0 { background-color: #FFFDE7; } 
+        .row-class-1 { background-color: #E8F5E9; } 
+        .row-class-2 { background-color: #E3F2FD; } 
+        .row-class-3 { background-color: #F3E5F5; } 
+        .row-class-4 { background-color: #FFECEE; } 
+        .row-class-5 { background-color: #FFF3E0; } 
+
+        .header-class-0 { background-color: #FFFDE7; color: #F57F17; font-size: 17px; font-weight: bold; text-align: left; padding: 10px; border-left: 5px solid #FBC02D; }
+        .header-class-1 { background-color: #E8F5E9; color: #2E7D32; font-size: 17px; font-weight: bold; text-align: left; padding: 10px; border-left: 5px solid #4CAF50; }
+        .header-class-2 { background-color: #E3F2FD; color: #1565C0; font-size: 17px; font-weight: bold; text-align: left; padding: 10px; border-left: 5px solid #2196F3; }
+        .header-class-3 { background-color: #F3E5F5; color: #6A1B9A; font-size: 17px; font-weight: bold; text-align: left; padding: 10px; border-left: 5px solid #AB47BC; }
+        .header-class-4 { background-color: #FFECEE; color: #C62828; font-size: 17px; font-weight: bold; text-align: left; padding: 10px; border-left: 5px solid #EF5350; }
+        .header-class-5 { background-color: #FFF3E0; color: #EF6C00; font-size: 17px; font-weight: bold; text-align: left; padding: 10px; border-left: 5px solid #FFA726; }
+
+        .footer-buttons { margin-top: 30px; border-top: 2px solid #eee; padding-top: 20px; }
+        .total-circle { font-size: 20px; font-weight: bold; color: #2E7D32; }
+        
+        #savedClassesInfo { margin-top: 15px; color: #2E7D32; font-size: 16px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🍽️ 냠냠 튼튼 점검 대장 🥦</h1>
+
+    <div id="setupSection" class="setup-section">
+        <h2>👋 환영합니다 선생님!</h2>
+        <p>반별로 학생 명단을 입력하고 추가해주세요.<br>(이름은 쉼표(,)나 줄바꿈으로 구분해주세요)</p></p>
+        
+        <div>
+            <select id="gradeSelect">
+                <option value="1">1학년</option>
+                <option value="2">2학년</option>
+                <option value="3">3학년</option>
+                <option value="4">4학년</option>
+                <option value="5">5학년</option>
+                <option value="6">6학년</option>
+            </select>
+            <select id="classSelect">
+                <option value="1">1반</option>
+                <option value="2">2반</option>
+                <option value="3">3반</option>
+                <option value="4">4반</option>
+                <option value="5">5반</option>
+            </select>
+        </div>
+        
+        <textarea id="studentInput" placeholder="예: 김철수, 이영희, 박민수"></textarea><br>
+        <button class="btn-save" onclick="saveClass()">이 반 명단 추가하기 ➕</button>
+        
+        <div id="savedClassesInfo">현재 추가된 반이 없습니다.</div>
+        
+        <button class="btn-finish" onclick="goToMain()">명단 설정 완료! 점검하러 가기 🚀</button>
+    </div>
+
+    <div id="mainSection" class="main-section">
+        <div class="header-controls">
+            <input type="date" id="datePicker" onchange="loadDailyRecords()">
+            <div class="class-selector-group">
+                <select id="viewClassSelect" onchange="handleClassSelectorChange()">
+                </select>
+                <button id="editBtn" class="btn-edit" onclick="openEditSection()">명단 수정 ✏️</button>
+            </div>
+        </div>
+        
+        <div style="text-align: right; margin-bottom: 5px;">
+            <button class="btn-all-o" onclick="checkAllOForCurrentView()">✨ 전체 학생 ⭕ 일괄 체크</button>
+        </div>
+
+        <div id="dynamicContentContainer">
+            <!-- 테이블 동적 생성 영역 -->
+        </div>
+
+        <div class="footer-buttons">
+            <button class="btn-save" onclick="showSetupSection()">➕ 다른 반 추가/관리하기</button>
+            <br><br>
+            <button class="btn-reset" onclick="resetAllData()">🚨 전체 데이터 초기화</button>
+        </div>
+    </div>
+
+    <div id="editSection" class="edit-section">
+        <h2 id="editClassTitle">반 명단 수정</h2>
+        <p>전학생을 추가하거나 이름을 수정/삭제할 수 있습니다.<br><span style="color:#d32f2f; font-size:14px;">(※ 이름 글자가 완전히 바뀌면 이전 기록과 연결되지 않습니다!)</span></p>
+        <textarea id="editStudentInput"></textarea><br>
+        <button class="btn-save" onclick="saveEditedClass()">수정 완료 💾</button>
+        <button class="btn-reset" onclick="cancelEdit()">취소 ❌</button>
+    </div>
+
+    <div id="allEditSection" class="edit-section">
+        <h2>전교생 명단 일괄 수정</h2>
+        <p>각 반별 형식에 맞춰 자유롭게 수정 후 저장해주세요.<br>(이름은 쉼표(,)로 구분해주세요)</p></p>
+        <textarea id="allEditStudentInput" placeholder="[1학년 1반]&#10;김철수, 이영희&#10;&#10;[2학년 1반]&#10;박민수, 홍길동"></textarea><br>
+        <button class="btn-save" onclick="saveAllEditedClasses()">전체 수정 완료 💾</button>
+        <button class="btn-reset" onclick="cancelEdit()">취소 ❌</button>
+    </div>
+</div>
+
+<script>
+    let classData = {}; 
+    let records = {};   
+    let deductions = {}; 
+    let editingTargetClass = ""; 
+
+    window.onload = function() {
+        const savedClasses = localStorage.getItem('meal_v2_classes');
+        const savedRecords = localStorage.getItem('meal_v2_records');
+        const savedDeductions = localStorage.getItem('meal_v2_deductions');
+
+        if (savedClasses) classData = JSON.parse(savedClasses);
+        if (savedRecords) records = JSON.parse(savedRecords);
+        if (savedDeductions) deductions = JSON.parse(savedDeductions);
+
+        document.getElementById('datePicker').value = new Date().toISOString().substring(0, 10);
+
+        if (Object.keys(classData).length > 0) {
+            updateClassSelector();
+            showMainSection();
+        } else {
+            showSetupSection();
+        }
+    }
+
+    function hideAllSections() {
+        document.getElementById('setupSection').classList.remove('active');
+        document.getElementById('mainSection').classList.remove('active');
+        document.getElementById('editSection').classList.remove('active');
+        document.getElementById('allEditSection').classList.remove('active');
+    }
+
+    function showSetupSection() {
+        hideAllSections();
+        document.getElementById('setupSection').classList.add('active');
+        updateSavedClassesInfo();
+    }
+
+    function showMainSection() {
+        hideAllSections();
+        document.getElementById('mainSection').classList.add('active');
+        loadDailyRecords();
+    }
+
+    function openEditSection() {
+        const selectedTarget = document.getElementById('viewClassSelect').value;
+        
+        hideAllSections();
+
+        if (selectedTarget === "ALL") {
+            document.getElementById('allEditSection').classList.add('active');
+            
+            let textOutput = "";
+            Object.keys(classData).sort().forEach(className => {
+                textOutput += `[${className}]\n`;
+                textOutput += classData[className].join(', ') + "\n\n";
+            });
+            document.getElementById('allEditStudentInput').value = textOutput.trim();
+        } else {
+            if (!selectedTarget) return;
+            editingTargetClass = selectedTarget;
+            document.getElementById('editSection').classList.add('active');
+            document.getElementById('editClassTitle').innerText = `${selectedTarget} 명단 수정`;
+            document.getElementById('editStudentInput').value = classData[selectedTarget].join(', ');
+        }
+    }
+
+    function cancelEdit() {
+        showMainSection();
+    }
+
+    function saveClass() {
+        const grade = document.getElementById('gradeSelect').value;
+        const classNum = document.getElementById('classSelect').value;
+        const className = `${grade}학년 ${classNum}반`;
+        
+        const input = document.getElementById('studentInput').value;
+        const parsed = input.split(/[\n,]+/).map(s => s.trim()).filter(s => s !== "");
+        
+        if (parsed.length === 0) {
+            alert("학생 이름을 1명 이상 입력해주세요!");
+            return;
+        }
+
+        classData[className] = parsed;
+        
+        if (!deductions[className]) deductions[className] = {};
+        parsed.forEach(name => {
+            if (deductions[className][name] === undefined) deductions[className][name] = 0;
+        });
+
+        saveData();
+        
+        document.getElementById('studentInput').value = ""; 
+        alert(`${className} 명단이 성공적으로 추가되었습니다!`);
+        updateSavedClassesInfo();
+    }
+    
+    function saveEditedClass() {
+        const currentClass = editingTargetClass;
+        const input = document.getElementById('editStudentInput').value;
+        const parsed = input.split(/[\n,]+/).map(s => s.trim()).filter(s => s !== "");
+        
+        if (parsed.length === 0) {
+            alert("학생 이름을 최소 1명 이상 유지해야 합니다!");
+            return;
+        }
+
+        classData[currentClass] = parsed;
+        
+        if (!deductions[currentClass]) deductions[currentClass] = {};
+        parsed.forEach(name => {
+            if (deductions[currentClass][name] === undefined) deductions[currentClass][name] = 0;
+        });
+
+        saveData();
+        alert('명단이 성공적으로 수정되었습니다! 🌟');
+        showMainSection();
+    }
+
+    function saveAllEditedClasses() {
+        const rawText = document.getElementById('allEditStudentInput').value;
+        const blocks = rawText.split('[');
+        let newClassData = {};
+
+        blocks.forEach(block => {
+            if (!block.trim()) return;
+            const lines = block.split(']');
+            if (lines.length < 2) return;
+            
+            const className = lines[0].trim();
+            const studentText = lines.slice(1).join(']').trim();
+            const students = studentText.split(/[\n,]+/).map(s => s.trim()).filter(s => s !== "");
+
+            if (className && students.length > 0) {
+                newClassData[className] = students;
+                if (!deductions[className]) deductions[className] = {};
+                students.forEach(name => {
+                    if (deductions[className][name] === undefined) deductions[className][name] = 0;
+                });
+            }
+        });
+
+        if (Object.keys(newClassData).length === 0) {
+            alert("올바른 형식으로 명단을 입력해주세요! (예: [1학년 1반] 김철수, 이영희)");
+            return;
+        }
+
+        classData = newClassData;
+        saveData();
+        alert('전교생 명단이 성공적으로 수정되었습니다! 🌟');
+        updateClassSelector();
+        showMainSection();
+    }
+
+    function updateSavedClassesInfo() {
+        const infoDiv = document.getElementById('savedClassesInfo');
+        const classes = Object.keys(classData);
+        if(classes.length === 0) {
+            infoDiv.innerText = "현재 추가된 반이 없습니다.";
+        } else {
+            infoDiv.innerText = `✅ 저장된 반: ${classes.join(', ')}`;
+        }
+    }
+
+    function goToMain() {
+        if(Object.keys(classData).length === 0) {
+            alert("최소 1개 이상의 반 명단을 추가해주세요!");
+            return;
+        }
+        updateClassSelector();
+        showMainSection();
+    }
+
+    function updateClassSelector() {
+        const selector = document.getElementById('viewClassSelect');
+        const currentValue = selector.value;
+        selector.innerHTML = '';
+        
+        const allOption = document.createElement('option');
+        allOption.value = "ALL";
+        allOption.innerText = "🌟 전교생 통합 보기";
+        selector.appendChild(allOption);
+
+        Object.keys(classData).sort().forEach(className => {
+            const option = document.createElement('option');
+            option.value = className;
+            option.innerText = className;
+            selector.appendChild(option);
+        });
+
+        if (currentValue && (currentValue === "ALL" || classData[currentValue])) {
+            selector.value = currentValue;
+        }
+    }
+
+    function handleClassSelectorChange() {
+        loadDailyRecords();
+    }
+
+    function loadDailyRecords() {
+        const date = document.getElementById('datePicker').value;
+        const selectedTarget = document.getElementById('viewClassSelect').value;
+        const container = document.getElementById('dynamicContentContainer');
+        container.innerHTML = ''; 
+
+        if (!selectedTarget) return;
+
+        if (!records[date]) records[date] = {}; 
+
+        const sortedClasses = Object.keys(classData).sort();
+
+        const table = document.createElement('table');
+        table.innerHTML = `
+            <thead>
+                <tr>
+                    <th style="width: 30%;">이름</th>
+                    <th style="width: 40%;">오늘의 식사</th>
+                    <th style="width: 15%;">모은 ⭕</th>
+                    <th style="width: 15%;">상품교환</th>
+                </tr>
+            </thead>
+            <tbody id="unifiedTableBody"></tbody>
+        `;
+        container.appendChild(table);
+        const tbody = document.getElementById('unifiedTableBody');
+
+        if (selectedTarget === "ALL") {
+            sortedClasses.forEach((className, classIndex) => {
+                if (!records[date][className]) records[date][className] = {};
+                const students = classData[className];
+                const colorIdx = classIndex % 6;
+                const colorClass = `row-class-${colorIdx}`;
+                const headerColorClass = `header-class-${colorIdx}`;
+
+                const trHeader = document.createElement('tr');
+                trHeader.innerHTML = `<td colspan="4" class="${headerColorClass}">📂 ${className}</td>`;
+                tbody.appendChild(trHeader);
+
+                students.forEach(name => {
+                    const tr = document.createElement('tr');
+                    tr.className = colorClass;
+                    
+                    const tdName = document.createElement('td');
+                    tdName.innerText = name;
+                    tdName.style.fontWeight = 'bold';
+                    
+                    const tdChecks = document.createElement('td');
+                    const status = records[date][className][name]; 
+                    
+                    tdChecks.innerHTML = `
+                        <button class="btn-check ${status === 'O' ? 'selected-O' : ''}" onclick="checkMeal('${date}', '${className}', '${name}', 'O')"><div class="shape-circle"></div></button>
+                        <button class="btn-check ${status === 'A' ? 'selected-A' : ''}" onclick="checkMeal('${date}', '${className}', '${name}', 'A')"><div class="shape-triangle"></div></button>
+                        <button class="btn-check ${status === 'X' ? 'selected-X' : ''}" onclick="checkMeal('${date}', '${className}', '${name}', 'X')"><div class="shape-cross"></div></button>
+                    `;
+
+                    const tdTotalO = document.createElement('td');
+                    const finalO = calculateCurrentO(className, name);
+                    tdTotalO.innerHTML = `<span class="total-circle">${finalO % 1 === 0 ? finalO : finalO.toFixed(1)}개</span>`;
+
+                    const tdDeduct = document.createElement('td');
+                    tdDeduct.innerHTML = `<button class="btn-deduct" onclick="deductO('${className}', '${name}', ${finalO})">🎁 차감</button>`;
+
+                    tr.appendChild(tdName);
+                    tr.appendChild(tdChecks);
+                    tr.appendChild(tdTotalO);
+                    tr.appendChild(tdDeduct);
+                    tbody.appendChild(tr);
+                });
+            });
+        } else {
+            const className = selectedTarget;
+            if (!classData[className]) return;
+            if (!records[date][className]) records[date][className] = {};
+
+            const students = classData[className];
+
+            students.forEach(name => {
+                const tr = document.createElement('tr');
+                
+                const tdName = document.createElement('td');
+                tdName.innerText = name;
+                tdName.style.fontWeight = 'bold';
+                
+                const tdChecks = document.createElement('td');
+                const status = records[date][className][name]; 
+                
+                tdChecks.innerHTML = `
+                    <button class="btn-check ${status === 'O' ? 'selected-O' : ''}" onclick="checkMeal('${date}', '${className}', '${name}', 'O')"><div class="shape-circle"></div></button>
+                    <button class="btn-check ${status === 'A' ? 'selected-A' : ''}" onclick="checkMeal('${date}', '${className}', '${name}', 'A')"><div class="shape-triangle"></div></button>
+                    <button class="btn-check ${status === 'X' ? 'selected-X' : ''}" onclick="checkMeal('${date}', '${className}', '${name}', 'X')"><div class="shape-cross"></div></button>
+                `;
+
+                const tdTotalO = document.createElement('td');
+                const finalO = calculateCurrentO(className, name);
+                tdTotalO.innerHTML = `<span class="total-circle">${finalO % 1 === 0 ? finalO : finalO.toFixed(1)}개</span>`;
+
+                const tdDeduct = document.createElement('td');
+                tdDeduct.innerHTML = `<button class="btn-deduct" onclick="deductO('${className}', '${name}', ${finalO})">🎁 차감</button>`;
+
+                tr.appendChild(tdName);
+                tr.appendChild(tdChecks);
+                tr.appendChild(tdTotalO);
+                tr.appendChild(tdDeduct);
+                tbody.appendChild(tr);
+            });
+        }
+    }
+
+    function checkMeal(date, className, name, status) {
+        if (!records[date][className]) records[date][className] = {};
+        
+        if (records[date][className][name] === status) {
+            delete records[date][className][name];
+        } else {
+            records[date][className][name] = status;
+        }
+        saveData();
+        loadDailyRecords(); 
+    }
+
+    function checkAllOForCurrentView() {
+        const date = document.getElementById('datePicker').value;
+        const selectedTarget = document.getElementById('viewClassSelect').value;
+        
+        if (!selectedTarget) return;
+        if (!records[date]) records[date] = {};
+
+        if (selectedTarget === "ALL") {
+            Object.keys(classData).forEach(className => {
+                if (!records[date][className]) records[date][className] = {};
+                classData[className].forEach(name => {
+                    records[date][className][name] = 'O';
+                });
+            });
+        } else {
+            const className = selectedTarget;
+            if (!records[date][className]) records[date][className] = {};
+            classData[className].forEach(name => {
+                records[date][className][name] = 'O';
+            });
+        }
+
+        saveData();
+        loadDailyRecords();
+    }
+
+    function calculateCurrentO(className, name) {
+        let totalO = 0;
+        let totalA = 0;
+        
+        for (let date in records) {
+            if (records[date][className] && records[date][className][name]) {
+                if (records[date][className][name] === 'O') totalO++;
+                if (records[date][className][name] === 'A') totalA++;
+            }
+        }
+        
+        let bonusO = totalA * 0.5;
+        if(!deductions[className]) deductions[className] = {};
+        let deductCount = deductions[className][name] || 0;
+        
+        return (totalO + bonusO) - deductCount;
+    }
+
+    function deductO(className, name, currentO) {
+        let amount = prompt(`[${className} ${name}] 학생의 동그라미를 몇 개 차감할까요?\n(현재 남은 동그라미: ${currentO % 1 === 0 ? currentO : currentO.toFixed(1)}개)`, "1");
+        
+        if (amount !== null) {
+            amount = parseFloat(amount);
+            if (isNaN(amount) || amount <= 0) {
+                alert("올바른 숫자를 입력해주세요!");
+            } else if (amount > currentO) {
+                alert("가지고 있는 동그라미보다 많이 차감할 수 없습니다!");
+            } else {
+                if(!deductions[className]) deductions[className] = {};
+                deductions[className][name] = (deductions[className][name] || 0) + amount;
+                saveData();
+                loadDailyRecords(); 
+                alert(`성공적으로 ${amount}개를 차감했습니다! 🎁`);
+            }
+        }
+    }
+
+    function saveData() {
+        localStorage.setItem('meal_v2_classes', JSON.stringify(classData));
+        localStorage.setItem('meal_v2_records', JSON.stringify(records));
+        localStorage.setItem('meal_v2_deductions', JSON.stringify(deductions));
+    }
+
+    function resetAllData() {
+        if(confirm("정말 모든 데이터를 싹~ 지우시겠습니까?\n(이 작업은 되돌릴 수 없습니다!)")) {
+            localStorage.removeItem('meal_v2_classes');
+            localStorage.removeItem('meal_v2_records');
+            localStorage.removeItem('meal_v2_deductions');
+            classData = {};
+            records = {};
+            deductions = {};
+            document.getElementById('studentInput').value = "";
+            showSetupSection();
+        }
+    }
+</script>
+
+</body>
+</html>
