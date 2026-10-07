@@ -1,901 +1,1571 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🍽️ 냠냠 튼튼 점검 대장 🥦</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
-<style>
-* {
-  box-sizing: border-box;
-}
-body {
-  margin: 0;
-  font-family: 'Jua', sans-serif;
-  background: #FFF8E7;
-  color: #5D4037;
-}
-header {
-  background: #FFCC80;
-  padding: 18px;
-  text-align: center;
-  font-size: 28px;
-  border-bottom: 4px solid #FFB74D;
-}
-.container {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 20px;
-}
-.section {
-  background: white;
-  border-radius: 18px;
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
-h2 {
-  margin-top: 0;
-  color: #6D4C41;
-}
-input,
-select,
-button {
-  font-family: inherit;
-  font-size: 16px;
-}
-input,
-select {
-  padding: 10px;
-  border: 2px solid #FFCC80;
-  border-radius: 10px;
-  background: #FFFDF5;
-}
-button {
-  border: none;
-  border-radius: 10px;
-  padding: 10px 16px;
-  cursor: pointer;
-  background: #FFCC80;
-  color: #5D4037;
-}
-button:hover {
-  opacity: 0.85;
-}
-.primary-btn {
-  background: #81C784;
-  color: white;
-}
-.danger-btn {
-  background: #EF9A9A;
-  color: white;
-}
-.hidden {
-  display: none !important;
-}
-/* 설정 */
-.setup-row {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  align-items: center;
-  margin-bottom: 15px;
-}
-.class-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 10px;
-}
-.class-item {
-  background: #FFF3E0;
-  border: 2px solid #FFCC80;
-  border-radius: 12px;
-  padding: 8px 12px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-/* 메인 */
-.top-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-bottom: 15px;
-}
-.date-area {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.table-wrap {
-  overflow-x: auto;
-}
-table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 650px;
-}
-th,
-td {
-  border: 2px solid #FFE0B2;
-  padding: 10px;
-  text-align: center;
-}
-th {
-  background: #FFF3E0;
-}
-tr:nth-child(even) td {
-  background: #FFFCF5;
-}
-.meal-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 5px;
-}
-.meal-btn {
-  min-width: 45px;
-  padding: 7px 10px;
-}
-.meal-btn.selected-o {
-  background: #81C784;
-  color: white;
-}
-.meal-btn.selected-a {
-  background: #FFD54F;
-  color: #5D4037;
-}
-.meal-btn.selected-x {
-  background: #E57373;
-  color: white;
-}
-.circle-count {
-  font-size: 18px;
-  font-weight: bold;
-}
-.exchange-btn {
-  background: #CE93D8;
-  color: white;
-}
-/* 수정 */
-.edit-row {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  align-items: center;
-  margin-bottom: 12px;
-}
-/* 전체 수정 */
-.all-edit-table input {
-  width: 90px;
-  text-align: center;
-}
-/* 상품 교환 모달 */
-.exchange-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.45);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-  padding: 20px;
-}
-.exchange-modal {
-  width: 100%;
-  max-width: 360px;
-  background: white;
-  border-radius: 20px;
-  padding: 25px 20px 20px;
-  text-align: center;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-}
-.exchange-modal h3 {
-  margin: 0 0 15px;
-  color: #6D4C41;
-  font-size: 22px;
-}
-.exchange-current {
-  margin-bottom: 15px;
-  font-size: 18px;
-}
-.exchange-input-row {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 10px;
-}
-.exchange-input {
-  width: 100px;
-  text-align: center;
-  font-size: 20px;
-  padding: 10px;
-}
-.exchange-action-row {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 6px;
-  margin-top: 20px;
-  width: 100%;
-}
-.exchange-action-row button {
-  flex: 1;
-  min-width: 0;
-  padding: 10px 6px;
-  font-size: 16px;
-}
-.exchange-subtract-btn {
-  background: #FFD54F;
-  color: #5D4037;
-}
-.exchange-add-btn {
-  background: #81C784;
-  color: white;
-}
-.exchange-cancel-btn {
-  background: #EF9A9A;
-  color: white;
-}
-@media (max-width: 600px) {
-  header {
-    font-size: 23px;
-  }
-  .container {
-    padding: 10px;
-  }
-  .section {
-    padding: 15px;
-  }
-  .exchange-action-row {
-    gap: 5px;
-  }
-  .exchange-action-row button {
-    font-size: 15px;
-    padding: 9px 4px;
-  }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>냠냠 튼튼 점검 대장 🍽️</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
+        body {
+            font-family: 'Jua', sans-serif;
+            background-color: #FFF9E6;
+            color: #5D4037;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #FF8C00;
+            font-size: 32px;
+        }
+        .setup-section,
+        .main-section,
+        .edit-section {
+            display: none;
+        }
+        .active {
+            display: block;
+        }
+        select {
+            font-family: 'Jua', sans-serif;
+            font-size: 18px;
+            padding: 5px;
+            border: 2px solid #FFCA28;
+            border-radius: 10px;
+            margin: 5px;
+        }
+        textarea {
+            width: 90%;
+            height: 100px;
+            border: 2px dashed #FFCA28;
+            border-radius: 10px;
+            padding: 10px;
+            font-family: 'Jua', sans-serif;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        #allEditStudentInput {
+            width: 90%;
+            height: 250px;
+            border: 2px dashed #FFCA28;
+            border-radius: 10px;
+            padding: 10px;
+            font-family: 'Jua', sans-serif;
+            font-size: 15px;
+            margin-top: 10px;
+            text-align: left;
+        }
+        button {
+            font-family: 'Jua', sans-serif;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: 0.2s;
+        }
+        button:hover {
+            transform: scale(1.05);
+        }
+        .btn-save {
+            background-color: #FFD54F;
+            color: #5D4037;
+        }
+        .btn-finish {
+            background-color: #4CAF50;
+            color: white;
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        .btn-reset {
+            background-color: #EF9A9A;
+            color: white;
+            font-size: 14px;
+        }
+        /* 상품교환 버튼 */
+        .btn-exchange {
+            background-color: #CE93D8;
+            color: white;
+            padding: 7px 12px;
+            font-size: 14px;
+        }
+        .btn-exchange:hover {
+            background-color: #AB47BC;
+        }
+        .btn-edit {
+            background-color: #81D4FA;
+            color: #0277BD;
+            padding: 5px 10px;
+            font-size: 16px;
+            border-radius: 10px;
+        }
+        .btn-all-o {
+            background-color: #E8F5E9;
+            color: #2E7D32;
+            border: 2px solid #4CAF50;
+            font-size: 14px;
+            padding: 5px 12px;
+            margin-bottom: 10px;
+        }
+        /* 도형 버튼 */
+        .btn-check {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background-color: #ffffff;
+            border: 2px solid #e0e0e0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            cursor: pointer;
+            transition: 0.15s;
+            margin: 0 3px;
+        }
+        .btn-check:hover {
+            transform: scale(1.08);
+        }
+        .shape-circle {
+            width: 18px;
+            height: 18px;
+            border: 3px solid #ccc;
+            border-radius: 50%;
+            box-sizing: border-box;
+        }
+        .shape-triangle {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 17px solid #ccc;
+            position: relative;
+            top: 1px;
+        }
+        .shape-cross {
+            width: 18px;
+            height: 18px;
+            position: relative;
+        }
+        .shape-cross::before,
+        .shape-cross::after {
+            content: '';
+            position: absolute;
+            top: 7px;
+            left: -1px;
+            width: 20px;
+            height: 4px;
+            background-color: #ccc;
+            border-radius: 2px;
+        }
+        .shape-cross::before {
+            transform: rotate(45deg);
+        }
+        .shape-cross::after {
+            transform: rotate(-45deg);
+        }
+        .btn-check.selected-O {
+            background-color: #E8F5E9;
+            border-color: #4CAF50;
+            box-shadow: 0 4px 8px rgba(76,175,80,0.25);
+        }
+        .btn-check.selected-O .shape-circle {
+            border-color: #4CAF50;
+            background-color: #4CAF50;
+        }
+        .btn-check.selected-A {
+            background-color: #FFF3E0;
+            border-color: #FF9800;
+            box-shadow: 0 4px 8px rgba(255,152,0,0.25);
+        }
+        .btn-check.selected-A .shape-triangle {
+            border-bottom-color: #FF9800;
+        }
+        .btn-check.selected-X {
+            background-color: #FFEBEE;
+            border-color: #F44336;
+            box-shadow: 0 4px 8px rgba(244,67,54,0.25);
+        }
+        .btn-check.selected-X .shape-cross::before,
+        .btn-check.selected-X .shape-cross::after {
+            background-color: #F44336;
+        }
+        input[type="date"] {
+            font-family: 'Jua', sans-serif;
+            font-size: 18px;
+            padding: 5px;
+            border: 2px solid #FFCA28;
+            border-radius: 10px;
+            margin-bottom: 5px;
+        }
+        .header-controls {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .class-selector-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 4px;
+            margin-top: 5px;
+        }
+        th,
+        td {
+            padding: 8px 5px;
+            vertical-align: middle;
+        }
+        th {
+            color: #F57C00;
+            font-size: 18px;
+            border-bottom: 2px solid #FFCA28;
+            background: #fff;
+        }
+        /* 반별 색상 */
+        .row-class-0 {
+            background-color: #FFFDE7;
+        }
+        .row-class-1 {
+            background-color: #E8F5E9;
+        }
+        .row-class-2 {
+            background-color: #E3F2FD;
+        }
+        .row-class-3 {
+            background-color: #F3E5F5;
+        }
+        .row-class-4 {
+            background-color: #FFECEE;
+        }
+        .row-class-5 {
+            background-color: #FFF3E0;
+        }
+        .header-class-0 {
+            background-color: #FFFDE7;
+            color: #F57F17;
+            font-size: 17px;
+            font-weight: bold;
+            text-align: left;
+            padding: 10px;
+            border-left: 5px solid #FBC02D;
+        }
+        .header-class-1 {
+            background-color: #E8F5E9;
+            color: #2E7D32;
+            font-size: 17px;
+            font-weight: bold;
+            text-align: left;
+            padding: 10px;
+            border-left: 5px solid #4CAF50;
+        }
+        .header-class-2 {
+            background-color: #E3F2FD;
+            color: #1565C0;
+            font-size: 17px;
+            font-weight: bold;
+            text-align: left;
+            padding: 10px;
+            border-left: 5px solid #2196F3;
+        }
+        .header-class-3 {
+            background-color: #F3E5F5;
+            color: #6A1B9A;
+            font-size: 17px;
+            font-weight: bold;
+            text-align: left;
+            padding: 10px;
+            border-left: 5px solid #AB47BC;
+        }
+        .header-class-4 {
+            background-color: #FFECEE;
+            color: #C62828;
+            font-size: 17px;
+            font-weight: bold;
+            text-align: left;
+            padding: 10px;
+            border-left: 5px solid #EF5350;
+        }
+        .header-class-5 {
+            background-color: #FFF3E0;
+            color: #EF6C00;
+            font-size: 17px;
+            font-weight: bold;
+            text-align: left;
+            padding: 10px;
+            border-left: 5px solid #FFA726;
+        }
+        .footer-buttons {
+            margin-top: 30px;
+            border-top: 2px solid #eee;
+            padding-top: 20px;
+        }
+        .total-circle {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2E7D32;
+        }
+        #savedClassesInfo {
+            margin-top: 15px;
+            color: #2E7D32;
+            font-size: 16px;
+        }
+        /* =====================================================
+           상품교환 팝업
+        ===================================================== */
+        .exchange-modal-overlay {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        .exchange-modal {
+            background-color: white;
+            padding: 25px;
+            border-radius: 20px;
+            width: min(85%, 350px);
+            box-sizing: border-box;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        .exchange-input-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            margin-top: 15px;
+        }
+        .exchange-input {
+            width: 90px;
+            padding: 9px 8px;
+            border: 2px solid #CE93D8;
+            border-radius: 10px;
+            font-family: 'Jua', sans-serif;
+            font-size: 18px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        /* 하단 차감 / 추가 / 취소 버튼 */
+        .exchange-action-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            margin-top: 20px;
+        }
+        .exchange-action-row button {
+            flex: 1;
+            margin: 0;
+            padding: 9px 8px;
+            font-size: 16px;
+        }
+        .exchange-subtract-btn {
+            background-color: #FFD54F;
+            color: #5D4037;
+        }
+        .exchange-subtract-btn:hover {
+            background-color: #FFCA28;
+        }
+        .exchange-add-btn {
+            background-color: #CE93D8;
+            color: white;
+        }
+        .exchange-add-btn:hover {
+            background-color: #AB47BC;
+        }
+        .exchange-cancel-btn {
+            background-color: #EF9A9A;
+            color: white;
+        }
+        .exchange-cancel-btn:hover {
+            background-color: #E57373;
+        }
+        /* 모바일 화면 */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                padding: 15px 8px;
+            }
+            h1 {
+                font-size: 26px;
+            }
+            table {
+                font-size: 14px;
+            }
+            th {
+                font-size: 15px;
+            }
+            .btn-check {
+                width: 38px;
+                height: 38px;
+                margin: 0 1px;
+            }
+            .shape-circle {
+                width: 15px;
+                height: 15px;
+            }
+            .shape-cross {
+                transform: scale(0.85);
+            }
+            .shape-triangle {
+                transform: scale(0.85);
+            }
+            .btn-exchange {
+                font-size: 13px;
+                padding: 6px 8px;
+            }
+            .exchange-modal {
+                width: 90%;
+                padding: 20px 15px;
+            }
+            .exchange-action-row {
+                gap: 4px;
+            }
+            .exchange-action-row button {
+                font-size: 15px;
+                padding: 9px 5px;
+            }
+        }
+    </style>
 </head>
 <body>
-<header>
-  🍽️ 냠냠 튼튼 점검 대장 🥦
-</header>
 <div class="container">
-  <!-- 설정 -->
-  <section id="setupSection" class="section">
-    <h2>🏫 반과 학생 설정</h2>
-    <div class="setup-row">
-      <input type="text" id="classNameInput" placeholder="반 이름">
-      <button class="primary-btn" onclick="addClass()">반 추가</button>
+    <h1>🍽️ 냠냠 튼튼 점검 대장 🥦</h1>
+    <!-- ==================== 명단 설정 ==================== -->
+    <div id="setupSection" class="setup-section">
+        <h2>👋 환영합니다 선생님!</h2>
+        <p>
+            반별로 학생 명단을 입력하고 추가해주세요.<br>
+            (이름은 쉼표(,)나 줄바꿈으로 구분해주세요)
+        </p>
+        <div>
+            <select id="gradeSelect">
+                <option value="1">1학년</option>
+                <option value="2">2학년</option>
+                <option value="3">3학년</option>
+                <option value="4">4학년</option>
+                <option value="5">5학년</option>
+                <option value="6">6학년</option>
+            </select>
+            <select id="classSelect">
+                <option value="1">1반</option>
+                <option value="2">2반</option>
+                <option value="3">3반</option>
+                <option value="4">4반</option>
+                <option value="5">5반</option>
+            </select>
+        </div>
+        <textarea
+            id="studentInput"
+            placeholder="예: 김철수, 이영희, 박민수">
+        </textarea>
+        <br>
+        <button class="btn-save" onclick="saveClass()">
+            이 반 명단 추가하기 ➕
+        </button>
+        <div id="savedClassesInfo">
+            현재 추가된 반이 없습니다.
+        </div>
+        <button class="btn-finish" onclick="goToMain()">
+            명단 설정 완료! 점검하러 가기 🚀
+        </button>
     </div>
-    <div id="classList" class="class-list"></div>
-    <hr style="border:none;border-top:2px dashed #FFE0B2;margin:20px 0;">
-    <div id="studentSetupArea"></div>
-    <div style="margin-top:15px;">
-      <button class="primary-btn" onclick="startApp()">🍀 점검 대장 시작</button>
+    <!-- ==================== 메인 ==================== -->
+    <div id="mainSection" class="main-section">
+        <div class="header-controls">
+            <input
+                type="date"
+                id="datePicker"
+                onchange="loadDailyRecords()"
+            >
+            <div class="class-selector-group">
+                <select
+                    id="viewClassSelect"
+                    onchange="handleClassSelectorChange()">
+                </select>
+                <button
+                    id="editBtn"
+                    class="btn-edit"
+                    onclick="openEditSection()">
+                    명단 수정 ✏️
+                </button>
+            </div>
+        </div>
+        <div style="text-align: right; margin-bottom: 5px;">
+            <button
+                class="btn-all-o"
+                onclick="checkAllOForCurrentView()">
+                ✨ 전체 학생 ⭕ 일괄 체크
+            </button>
+        </div>
+        <div id="dynamicContentContainer">
+            <!-- 테이블 동적 생성 -->
+        </div>
+        <div class="footer-buttons">
+            <button
+                class="btn-save"
+                onclick="showSetupSection()">
+                ➕ 다른 반 추가/관리하기
+            </button>
+            <br><br>
+            <button
+                class="btn-reset"
+                onclick="resetAllData()">
+                🚨 전체 데이터 초기화
+            </button>
+        </div>
     </div>
-  </section>
-  <!-- 메인 -->
-  <section id="mainSection" class="section hidden">
-    <div class="top-bar">
-      <div>
-        <strong id="currentClassTitle"></strong>
-      </div>
-      <div class="date-area">
-        <input type="date" id="datePicker" onchange="loadDailyRecords()">
-        <button onclick="showEdit()">⚙️ 학생 수정</button>
-        <button onclick="showAllEdit()">📋 전체 수정</button>
-        <button class="danger-btn" onclick="resetApp()">초기화</button>
-      </div>
+    <!-- ==================== 개별 명단 수정 ==================== -->
+    <div id="editSection" class="edit-section">
+        <h2 id="editClassTitle">
+            반 명단 수정
+        </h2>
+        <p>
+            전학생을 추가하거나 이름을 수정/삭제할 수 있습니다.<br>
+            <span style="color:#d32f2f; font-size:14px;">
+                (※ 이름 글자가 완전히 바뀌면 이전 기록과 연결되지 않습니다!)
+            </span>
+        </p>
+        <textarea id="editStudentInput"></textarea>
+        <br>
+        <button
+            class="btn-save"
+            onclick="saveEditedClass()">
+            수정 완료 💾
+        </button>
+        <button
+            class="btn-reset"
+            onclick="cancelEdit()">
+            취소 ❌
+        </button>
     </div>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>이름</th>
-            <th>오늘의 식사</th>
-            <th>모은 ⭕</th>
-            <th>상품교환</th>
-          </tr>
-        </thead>
-        <tbody id="mealTableBody"></tbody>
-      </table>
+    <!-- ==================== 전체 명단 수정 ==================== -->
+    <div id="allEditSection" class="edit-section">
+        <h2>전교생 명단 일괄 수정</h2>
+        <p>
+            각 반별 형식에 맞춰 자유롭게 수정 후 저장해주세요.<br>
+            (이름은 쉼표(,)로 구분해주세요)
+        </p>
+        <textarea
+            id="allEditStudentInput"
+            placeholder="[1학년 1반]&#10;김철수, 이영희&#10;&#10;[2학년 1반]&#10;박민수, 홍길동">
+        </textarea>
+        <br>
+        <button
+            class="btn-save"
+            onclick="saveAllEditedClasses()">
+            전체 수정 완료 💾
+        </button>
+        <button
+            class="btn-reset"
+            onclick="cancelEdit()">
+            취소 ❌
+        </button>
     </div>
-  </section>
-  <!-- 학생 수정 -->
-  <section id="editSection" class="section hidden">
-    <h2>✏️ 학생 수정</h2>
-    <div id="editStudentList"></div>
-    <div style="margin-top:15px;">
-      <button class="primary-btn" onclick="saveStudentEdit()">저장</button>
-      <button onclick="showMain()">돌아가기</button>
-    </div>
-  </section>
-  <!-- 전체 수정 -->
-  <section id="allEditSection" class="section hidden">
-    <h2>📋 전체 학생 기록 수정</h2>
-    <div class="table-wrap">
-      <table class="all-edit-table">
-        <thead>
-          <tr>
-            <th>이름</th>
-            <th>기본 ⭕</th>
-            <th>추가/차감</th>
-            <th>현재 ⭕</th>
-          </tr>
-        </thead>
-        <tbody id="allEditBody"></tbody>
-      </table>
-    </div>
-    <div style="margin-top:15px;">
-      <button class="primary-btn" onclick="saveAllEdit()">저장</button>
-      <button onclick="showMain()">돌아가기</button>
-    </div>
-  </section>
 </div>
 <script>
-const CLASS_KEY = 'meal_v2_classes';
-const RECORD_KEY = 'meal_v2_records';
-const DEDUCTION_KEY = 'meal_v2_deductions';
-let classData = JSON.parse(localStorage.getItem(CLASS_KEY) || '{}');
-let records = JSON.parse(localStorage.getItem(RECORD_KEY) || '{}');
-let deductions = JSON.parse(localStorage.getItem(DEDUCTION_KEY) || '{}');
-let currentClass = '';
-let currentEditClass = '';
-/* =========================
-   저장
-========================= */
-function saveAllData() {
-  localStorage.setItem(CLASS_KEY, JSON.stringify(classData));
-  localStorage.setItem(RECORD_KEY, JSON.stringify(records));
-  localStorage.setItem(DEDUCTION_KEY, JSON.stringify(deductions));
-}
-/* =========================
-   초기 화면
-========================= */
-function init() {
-  renderClassList();
-}
-function renderClassList() {
-  const list = document.getElementById('classList');
-  list.innerHTML = '';
-  Object.keys(classData).forEach(className => {
-    const item = document.createElement('div');
-    item.className = 'class-item';
-    item.innerHTML = `
-      <span>${escapeHtml(className)}</span>
-      <button onclick="selectClass('${escapeJs(className)}')">선택</button>
-      <button class="danger-btn" onclick="deleteClass('${escapeJs(className)}')">삭제</button>
-    `;
-    list.appendChild(item);
-  });
-}
-/* =========================
-   반 추가
-========================= */
-function addClass() {
-  const input = document.getElementById('classNameInput');
-  const className = input.value.trim();
-  if (!className) {
-    alert('반 이름을 입력해주세요.');
-    return;
-  }
-  if (classData[className]) {
-    alert('이미 있는 반입니다.');
-    return;
-  }
-  classData[className] = [];
-  deductions[className] = {};
-  saveAllData();
-  input.value = '';
-  renderClassList();
-  renderStudentSetup();
-}
-/* =========================
-   반 선택
-========================= */
-function selectClass(className) {
-  currentClass = className;
-  renderStudentSetup();
-}
-function deleteClass(className) {
-  if (!confirm(`"${className}" 반을 삭제할까요?`)) {
-    return;
-  }
-  delete classData[className];
-  delete deductions[className];
-  Object.keys(records).forEach(date => {
-    if (records[date] && records[date][className]) {
-      delete records[date][className];
+    /* =====================================================
+       데이터
+    ===================================================== */
+    let classData = {};
+    let records = {};
+    let deductions = {};
+    let editingTargetClass = "";
+    /* =====================================================
+       페이지 시작
+    ===================================================== */
+    window.onload = function() {
+        const savedClasses =
+            localStorage.getItem('meal_v2_classes');
+        const savedRecords =
+            localStorage.getItem('meal_v2_records');
+        const savedDeductions =
+            localStorage.getItem('meal_v2_deductions');
+        if (savedClasses) {
+            classData = JSON.parse(savedClasses);
+        }
+        if (savedRecords) {
+            records = JSON.parse(savedRecords);
+        }
+        if (savedDeductions) {
+            deductions = JSON.parse(savedDeductions);
+        }
+        document.getElementById('datePicker').value =
+            new Date().toISOString().substring(0, 10);
+        if (Object.keys(classData).length > 0) {
+            updateClassSelector();
+            showMainSection();
+        } else {
+            showSetupSection();
+        }
+    };
+    /* =====================================================
+       화면 전환
+    ===================================================== */
+    function hideAllSections() {
+        document
+            .getElementById('setupSection')
+            .classList.remove('active');
+        document
+            .getElementById('mainSection')
+            .classList.remove('active');
+        document
+            .getElementById('editSection')
+            .classList.remove('active');
+        document
+            .getElementById('allEditSection')
+            .classList.remove('active');
     }
-  });
-  saveAllData();
-  renderClassList();
-  renderStudentSetup();
-}
-/* =========================
-   학생 설정
-========================= */
-function renderStudentSetup() {
-  const area = document.getElementById('studentSetupArea');
-  if (!currentClass) {
-    area.innerHTML = '<p>반을 선택해주세요.</p>';
-    return;
-  }
-  const students = classData[currentClass] || [];
-  let html = `
-    <h3>👧 ${escapeHtml(currentClass)} 학생</h3>
-    <div id="studentInputs">
-  `;
-  if (students.length === 0) {
-    html += `
-      <div class="edit-row">
-        <input type="text" class="student-name-input" placeholder="학생 이름">
-        <button onclick="addStudentInput()">➕ 학생 추가</button>
-      </div>
-    `;
-  } else {
-    students.forEach(name => {
-      html += `
-        <div class="edit-row">
-          <input type="text" class="student-name-input" value="${escapeHtml(name)}">
-        </div>
-      `;
-    });
-    html += `
-      <button onclick="addStudentInput()">➕ 학생 추가</button>
-    `;
-  }
-  html += `
-    </div>
-  `;
-  area.innerHTML = html;
-}
-function addStudentInput() {
-  const container = document.getElementById('studentInputs');
-  const row = document.createElement('div');
-  row.className = 'edit-row';
-  row.innerHTML = `
-    <input type="text" class="student-name-input" placeholder="학생 이름">
-  `;
-  container.appendChild(row);
-}
-/* =========================
-   앱 시작
-========================= */
-function startApp() {
-  if (!currentClass) {
-    alert('반을 먼저 선택해주세요.');
-    return;
-  }
-  const inputs = document.querySelectorAll('.student-name-input');
-  const students = [];
-  inputs.forEach(input => {
-    const name = input.value.trim();
-    if (name && !students.includes(name)) {
-      students.push(name);
+    function showSetupSection() {
+        hideAllSections();
+        document
+            .getElementById('setupSection')
+            .classList.add('active');
+        updateSavedClassesInfo();
     }
-  });
-  if (students.length === 0) {
-    alert('학생 이름을 한 명 이상 입력해주세요.');
-    return;
-  }
-  classData[currentClass] = students;
-  if (!deductions[currentClass]) {
-    deductions[currentClass] = {};
-  }
-  students.forEach(name => {
-    if (typeof deductions[currentClass][name] !== 'number') {
-      deductions[currentClass][name] = 0;
+    function showMainSection() {
+        hideAllSections();
+        document
+            .getElementById('mainSection')
+            .classList.add('active');
+        loadDailyRecords();
     }
-  });
-  saveAllData();
-  document.getElementById('setupSection').classList.add('hidden');
-  document.getElementById('mainSection').classList.remove('hidden');
-  document.getElementById('currentClassTitle').textContent =
-    `🏫 ${currentClass}`;
-  const today = new Date();
-  const yyyy = today.getFullYear();
-  const mm = String(today.getMonth() + 1).padStart(2, '0');
-  const dd = String(today.getDate()).padStart(2, '0');
-  document.getElementById('datePicker').value =
-    `${yyyy}-${mm}-${dd}`;
-  loadDailyRecords();
-}
-/* =========================
-   날짜별 기록
-========================= */
-function loadDailyRecords() {
-  const date = document.getElementById('datePicker').value;
-  if (!date || !currentClass) {
-    return;
-  }
-  if (!records[date]) {
-    records[date] = {};
-  }
-  if (!records[date][currentClass]) {
-    records[date][currentClass] = {};
-  }
-  renderMealTable();
-}
-function renderMealTable() {
-  const tbody = document.getElementById('mealTableBody');
-  tbody.innerHTML = '';
-  const date = document.getElementById('datePicker').value;
-  const students = classData[currentClass] || [];
-  students.forEach(name => {
-    const record =
-      records[date] &&
-      records[date][currentClass] &&
-      records[date][currentClass][name]
-        ? records[date][currentClass][name]
-        : '';
-    const currentO = calculateCurrentO(currentClass, name);
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${escapeHtml(name)}</td>
-      <td>
-        <div class="meal-buttons">
-          <button
-            class="meal-btn ${record === 'O' ? 'selected-o' : ''}"
-            onclick="setMeal('${escapeJs(name)}','O')">
-            O
-          </button>
-          <button
-            class="meal-btn ${record === 'A' ? 'selected-a' : ''}"
-            onclick="setMeal('${escapeJs(name)}','A')">
-            A
-          </button>
-          <button
-            class="meal-btn ${record === 'X' ? 'selected-x' : ''}"
-            onclick="setMeal('${escapeJs(name)}','X')">
-            X
-          </button>
-        </div>
-      </td>
-      <td>
-        <span class="circle-count">
-          ${formatCircle(currentO)}
-        </span>
-      </td>
-      <td>
-        <button
-          class="exchange-btn"
-          onclick="exchangeO('${escapeJs(name)}')">
-          🎁 교환
-        </button>
-      </td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
-/* =========================
-   오늘의 식사 저장
-========================= */
-function setMeal(name, value) {
-  const date = document.getElementById('datePicker').value;
-  if (!records[date]) {
-    records[date] = {};
-  }
-  if (!records[date][currentClass]) {
-    records[date][currentClass] = {};
-  }
-  records[date][currentClass][name] = value;
-  saveAllData();
-  renderMealTable();
-}
-/* =========================
-   기본 O 계산
-   O = 1
-   A = 0.5
-   X = 0
-========================= */
-function calculateBaseO(className, name) {
-  let total = 0;
-  Object.keys(records).forEach(date => {
-    const classRecords = records[date] && records[date][className];
-    if (!classRecords) {
-      return;
+    /* =====================================================
+       명단 수정 화면
+    ===================================================== */
+    function openEditSection() {
+        const selectedTarget =
+            document.getElementById('viewClassSelect').value;
+        hideAllSections();
+        if (selectedTarget === "ALL") {
+            document
+                .getElementById('allEditSection')
+                .classList.add('active');
+            let textOutput = "";
+            Object.keys(classData)
+                .sort()
+                .forEach(className => {
+                    textOutput += `[${className}]\n`;
+                    textOutput +=
+                        classData[className].join(', ');
+                    textOutput += "\n\n";
+                });
+            document.getElementById(
+                'allEditStudentInput'
+            ).value = textOutput.trim();
+        } else {
+            if (!selectedTarget) return;
+            editingTargetClass = selectedTarget;
+            document
+                .getElementById('editSection')
+                .classList.add('active');
+            document.getElementById(
+                'editClassTitle'
+            ).innerText =
+                `${selectedTarget} 명단 수정`;
+            document.getElementById(
+                'editStudentInput'
+            ).value =
+                classData[selectedTarget].join(', ');
+        }
     }
-    const value = classRecords[name];
-    if (value === 'O') {
-      total += 1;
-    } else if (value === 'A') {
-      total += 0.5;
+    function cancelEdit() {
+        showMainSection();
     }
-  });
-  return total;
-}
-/* =========================
-   현재 O 계산
-========================= */
-function calculateCurrentO(className, name) {
-  const base = calculateBaseO(className, name);
-  const adjustment =
-    deductions[className] &&
-    typeof deductions[className][name] === 'number'
-      ? deductions[className][name]
-      : 0;
-  return base + adjustment;
-}
-/* =========================
-   상품 교환
-========================= */
-function exchangeO(name) {
-  const current = calculateCurrentO(currentClass, name);
-  const overlay = document.createElement('div');
-  overlay.className = 'exchange-modal-overlay';
-  const modal = document.createElement('div');
-  modal.className = 'exchange-modal';
-  modal.innerHTML = `
-    <h3>🎁 상품 교환</h3>
-    <div class="exchange-current">
-      현재 동그라미: <strong>${formatCircle(current)}</strong>
-    </div>
-    <div class="exchange-input-row">
-      <input
-        type="number"
-        id="exchangeAmountInput"
-        class="exchange-input"
-        min="0.5"
-        step="0.5"
-        value="1"
-        inputmode="decimal"
-      >
-    </div>
-    <div class="exchange-action-row">
-      <button
-        type="button"
-        class="exchange-subtract-btn"
-        id="exchangeSubtractBtn">
-        차감
-      </button>
-      <button
-        type="button"
-        class="exchange-add-btn"
-        id="exchangeAddBtn">
-        추가
-      </button>
-      <button
-        type="button"
-        class="exchange-cancel-btn"
-        id="exchangeCancelBtn">
-        취소
-      </button>
-    </div>
-  `;
-  overlay.appendChild(modal);
-  document.body.appendChild(overlay);
-  const input =
-    document.getElementById('exchangeAmountInput');
-  const subtractBtn =
-    document.getElementById('exchangeSubtractBtn');
-  const addBtn =
-    document.getElementById('exchangeAddBtn');
-  const cancelBtn =
-    document.getElementById('exchangeCancelBtn');
-  input.focus();
-  input.select();
-  function closeModal() {
-    overlay.remove();
-  }
-  function applyExchange(amount, isAddition) {
-    const value = parseFloat(amount);
-    if (isNaN(value) || value <= 0) {
-      alert('차감하거나 추가할 동그라미 수를 입력해주세요.');
-      input.focus();
-      return;
+    /* =====================================================
+       반 추가
+    ===================================================== */
+    function saveClass() {
+        const grade =
+            document.getElementById('gradeSelect').value;
+        const classNum =
+            document.getElementById('classSelect').value;
+        const className =
+            `${grade}학년 ${classNum}반`;
+        const input =
+            document.getElementById('studentInput').value;
+        const parsed =
+            input
+                .split(/[\n,]+/)
+                .map(s => s.trim())
+                .filter(s => s !== "");
+        if (parsed.length === 0) {
+            alert(
+                "학생 이름을 1명 이상 입력해주세요!"
+            );
+            return;
+        }
+        classData[className] = parsed;
+        if (!deductions[className]) {
+            deductions[className] = {};
+        }
+        parsed.forEach(name => {
+            if (
+                deductions[className][name] === undefined
+            ) {
+                deductions[className][name] = 0;
+            }
+        });
+        saveData();
+        document.getElementById(
+            'studentInput'
+        ).value = "";
+        alert(
+            `${className} 명단이 성공적으로 추가되었습니다!`
+        );
+        updateSavedClassesInfo();
     }
-    if (!deductions[currentClass]) {
-      deductions[currentClass] = {};
+    /* =====================================================
+       개별 명단 수정
+    ===================================================== */
+    function saveEditedClass() {
+        const currentClass =
+            editingTargetClass;
+        const input =
+            document.getElementById(
+                'editStudentInput'
+            ).value;
+        const parsed =
+            input
+                .split(/[\n,]+/)
+                .map(s => s.trim())
+                .filter(s => s !== "");
+        if (parsed.length === 0) {
+            alert(
+                "학생 이름을 최소 1명 이상 유지해야 합니다!"
+            );
+            return;
+        }
+        classData[currentClass] = parsed;
+        if (!deductions[currentClass]) {
+            deductions[currentClass] = {};
+        }
+        parsed.forEach(name => {
+            if (
+                deductions[currentClass][name] === undefined
+            ) {
+                deductions[currentClass][name] = 0;
+            }
+        });
+        saveData();
+        alert(
+            '명단이 성공적으로 수정되었습니다! 🌟'
+        );
+        showMainSection();
     }
-    if (typeof deductions[currentClass][name] !== 'number') {
-      deductions[currentClass][name] = 0;
+    /* =====================================================
+       전체 명단 수정
+    ===================================================== */
+    function saveAllEditedClasses() {
+        const rawText =
+            document.getElementById(
+                'allEditStudentInput'
+            ).value;
+        const blocks =
+            rawText.split('[');
+        let newClassData = {};
+        blocks.forEach(block => {
+            if (!block.trim()) return;
+            const lines =
+                block.split(']');
+            if (lines.length < 2) return;
+            const className =
+                lines[0].trim();
+            const studentText =
+                lines.slice(1).join(']').trim();
+            const students =
+                studentText
+                    .split(/[\n,]+/)
+                    .map(s => s.trim())
+                    .filter(s => s !== "");
+            if (
+                className &&
+                students.length > 0
+            ) {
+                newClassData[className] =
+                    students;
+                if (!deductions[className]) {
+                    deductions[className] = {};
+                }
+                students.forEach(name => {
+                    if (
+                        deductions[className][name] === undefined
+                    ) {
+                        deductions[className][name] = 0;
+                    }
+                });
+            }
+        });
+        if (
+            Object.keys(newClassData).length === 0
+        ) {
+            alert(
+                "올바른 형식으로 명단을 입력해주세요! " +
+                "(예: [1학년 1반] 김철수, 이영희)"
+            );
+            return;
+        }
+        classData = newClassData;
+        saveData();
+        alert(
+            '전교생 명단이 성공적으로 수정되었습니다! 🌟'
+        );
+        updateClassSelector();
+        showMainSection();
     }
-    if (isAddition) {
-      deductions[currentClass][name] += value;
-    } else {
-      deductions[currentClass][name] -= value;
+    /* =====================================================
+       저장된 반 표시
+    ===================================================== */
+    function updateSavedClassesInfo() {
+        const infoDiv =
+            document.getElementById(
+                'savedClassesInfo'
+            );
+        const classes =
+            Object.keys(classData);
+        if (classes.length === 0) {
+            infoDiv.innerText =
+                "현재 추가된 반이 없습니다.";
+        } else {
+            infoDiv.innerText =
+                `✅ 저장된 반: ${classes.join(', ')}`;
+        }
     }
-    saveAllData();
-    closeModal();
-    renderMealTable();
-  }
-  subtractBtn.addEventListener('click', () => {
-    applyExchange(input.value, false);
-  });
-  addBtn.addEventListener('click', () => {
-    applyExchange(input.value, true);
-  });
-  cancelBtn.addEventListener('click', closeModal);
-  input.addEventListener('keydown', event => {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      applyExchange(input.value, false);
+    /* =====================================================
+       메인으로 이동
+    ===================================================== */
+    function goToMain() {
+        if (
+            Object.keys(classData).length === 0
+        ) {
+            alert(
+                "최소 1개 이상의 반 명단을 추가해주세요!"
+            );
+            return;
+        }
+        updateClassSelector();
+        showMainSection();
     }
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      closeModal();
+    /* =====================================================
+       반 선택 목록
+    ===================================================== */
+    function updateClassSelector() {
+        const selector =
+            document.getElementById(
+                'viewClassSelect'
+            );
+        const currentValue =
+            selector.value;
+        selector.innerHTML = "";
+        const allOption =
+            document.createElement('option');
+        allOption.value = "ALL";
+        allOption.innerText =
+            "🌟 전교생 통합 보기";
+        selector.appendChild(allOption);
+        Object.keys(classData)
+            .sort()
+            .forEach(className => {
+                const option =
+                    document.createElement('option');
+                option.value =
+                    className;
+                option.innerText =
+                    className;
+                selector.appendChild(option);
+            });
+        if (
+            currentValue &&
+            (
+                currentValue === "ALL" ||
+                classData[currentValue]
+            )
+        ) {
+            selector.value =
+                currentValue;
+        }
     }
-  });
-  overlay.addEventListener('click', event => {
-    if (event.target === overlay) {
-      closeModal();
+    /* =====================================================
+       반 선택 변경
+    ===================================================== */
+    function handleClassSelectorChange() {
+        loadDailyRecords();
     }
-  });
-}
-/* =========================
-   학생 수정 화면
-========================= */
-function showEdit() {
-  currentEditClass = currentClass;
-  document.getElementById('mainSection').classList.add('hidden');
-  document.getElementById('editSection').classList.remove('hidden');
-  renderEditStudentList();
-}
-function renderEditStudentList() {
-  const area = document.getElementById('editStudentList');
-  const students = classData[currentEditClass] || [];
-  area.innerHTML = '';
-  students.forEach((name, index) => {
-    const row = document.createElement('div');
-    row.className = 'edit-row';
-    row.innerHTML = `
-      <input
-        type="text"
-        class="edit-student-input"
-        data-index="${index}"
-        value="${escapeHtml(name)}"
-      >
-    `;
-    area.appendChild(row);
-  });
-}
-function saveStudentEdit() {
-  const inputs =
-    document.querySelectorAll('.edit-student-input');
-  const students = [];
-  inputs.forEach(input => {
-    const name = input.value.trim();
-    if (name && !students.includes(name)) {
-      students.push(name);
+    /* =====================================================
+       학생 기록 테이블
+    ===================================================== */
+    function loadDailyRecords() {
+        const date =
+            document.getElementById(
+                'datePicker'
+            ).value;
+        const selectedTarget =
+            document.getElementById(
+                'viewClassSelect'
+            ).value;
+        const container =
+            document.getElementById(
+                'dynamicContentContainer'
+            );
+        container.innerHTML = "";
+        if (!selectedTarget) return;
+        if (!records[date]) {
+            records[date] = {};
+        }
+        const sortedClasses =
+            Object.keys(classData).sort();
+        const table =
+            document.createElement('table');
+        table.innerHTML = `
+            <thead>
+                <tr>
+                    <th style="width: 30%;">이름</th>
+                    <th style="width: 40%;">오늘의 식사</th>
+                    <th style="width: 15%;">모은 ⭕</th>
+                    <th style="width: 15%;">상품교환</th>
+                </tr>
+            </thead>
+            <tbody id="unifiedTableBody"></tbody>
+        `;
+        container.appendChild(table);
+        const tbody =
+            document.getElementById(
+                'unifiedTableBody'
+            );
+        /* ===========================
+           전교생
+        =========================== */
+        if (selectedTarget === "ALL") {
+            sortedClasses.forEach(
+                (className, classIndex) => {
+                    if (
+                        !records[date][className]
+                    ) {
+                        records[date][className] = {};
+                    }
+                    const students =
+                        classData[className];
+                    const colorIdx =
+                        classIndex % 6;
+                    const colorClass =
+                        `row-class-${colorIdx}`;
+                    const headerColorClass =
+                        `header-class-${colorIdx}`;
+                    const trHeader =
+                        document.createElement('tr');
+                    trHeader.innerHTML = `
+                        <td colspan="4"
+                            class="${headerColorClass}">
+                            📂 ${className}
+                        </td>
+                    `;
+                    tbody.appendChild(
+                        trHeader
+                    );
+                    students.forEach(name => {
+                        createStudentRow(
+                            tbody,
+                            date,
+                            className,
+                            name,
+                            colorClass
+                        );
+                    });
+                }
+            );
+        } else {
+            /* ===========================
+               특정 반
+            =========================== */
+            const className =
+                selectedTarget;
+            if (!classData[className]) return;
+            if (
+                !records[date][className]
+            ) {
+                records[date][className] = {};
+            }
+            const students =
+                classData[className];
+            students.forEach(name => {
+                createStudentRow(
+                    tbody,
+                    date,
+                    className,
+                    name,
+                    ""
+                );
+            });
+        }
     }
-  });
-  if (students.length === 0) {
-    alert('학생을 한 명 이상 입력해주세요.');
-    return;
-  }
-  const oldStudents = classData[currentEditClass] || [];
-  if (!deductions[currentEditClass]) {
-    deductions[currentEditClass] = {};
-  }
-  students.forEach(name => {
-    if (typeof deductions[currentEditClass][name] !== 'number') {
-      deductions[currentEditClass][name] = 0;
+    /* =====================================================
+       학생 한 명의 행 생성
+    ===================================================== */
+    function createStudentRow(
+        tbody,
+        date,
+        className,
+        name,
+        colorClass
+    ) {
+        const tr =
+            document.createElement('tr');
+        if (colorClass) {
+            tr.className = colorClass;
+        }
+        /* 이름 */
+        const tdName =
+            document.createElement('td');
+        tdName.innerText =
+            name;
+        tdName.style.fontWeight =
+            'bold';
+        /* 식사 체크 */
+        const tdChecks =
+            document.createElement('td');
+        const status =
+            records[date][className][name];
+        tdChecks.innerHTML = `
+            <button
+                class="btn-check ${
+                    status === 'O'
+                        ? 'selected-O'
+                        : ''
+                }"
+                onclick="checkMeal(
+                    '${escapeForAttribute(date)}',
+                    '${escapeForAttribute(className)}',
+                    '${escapeForAttribute(name)}',
+                    'O'
+                )">
+                <div class="shape-circle"></div>
+            </button>
+            <button
+                class="btn-check ${
+                    status === 'A'
+                        ? 'selected-A'
+                        : ''
+                }"
+                onclick="checkMeal(
+                    '${escapeForAttribute(date)}',
+                    '${escapeForAttribute(className)}',
+                    '${escapeForAttribute(name)}',
+                    'A'
+                )">
+                <div class="shape-triangle"></div>
+            </button>
+            <button
+                class="btn-check ${
+                    status === 'X'
+                        ? 'selected-X'
+                        : ''
+                }"
+                onclick="checkMeal(
+                    '${escapeForAttribute(date)}',
+                    '${escapeForAttribute(className)}',
+                    '${escapeForAttribute(name)}',
+                    'X'
+                )">
+                <div class="shape-cross"></div>
+            </button>
+        `;
+        /* 현재 동그라미 */
+        const tdTotalO =
+            document.createElement('td');
+        const finalO =
+            calculateCurrentO(
+                className,
+                name
+            );
+        const displayO =
+            finalO % 1 === 0
+                ? finalO
+                : finalO.toFixed(1);
+        tdTotalO.innerHTML = `
+            <span class="total-circle">
+                ${displayO}개
+            </span>
+        `;
+        /* 상품교환 */
+        const tdExchange =
+            document.createElement('td');
+        tdExchange.innerHTML = `
+            <button
+                class="btn-exchange"
+                onclick="exchangeO(
+                    '${escapeForAttribute(className)}',
+                    '${escapeForAttribute(name)}'
+                )">
+                🎁 교환
+            </button>
+        `;
+        tr.appendChild(tdName);
+        tr.appendChild(tdChecks);
+        tr.appendChild(tdTotalO);
+        tr.appendChild(tdExchange);
+        tbody.appendChild(tr);
     }
-  });
-  oldStudents.forEach(name => {
-    if (!students.includes(name)) {
-      delete deductions[currentEditClass][name];
+    /* =====================================================
+       식사 체크
+    ===================================================== */
+    function checkMeal(
+        date,
+        className,
+        name,
+        status
+    ) {
+        if (!records[date][className]) {
+            records[date][className] = {};
+        }
+        if (
+            records[date][className][name]
+            === status
+        ) {
+            delete records[date][className][name];
+        } else {
+            records[date][className][name] =
+                status;
+        }
+        saveData();
+        loadDailyRecords();
     }
-  });
-  classData[currentEditClass] = students;
-  saveAllData();
-  showMain();
-}
-/* =========================
-   전체 수정
-========================= */
-function showAllEdit() {
-  document.getElementById('mainSection').classList.add('hidden');
-  document.getElementById('allEditSection').classList.remove('hidden');
-  renderAllEdit();
-}
-function renderAllEdit() {
-  const tbody = document.getElementById('allEditBody');
-  tbody.innerHTML = '';
-  const students = classData[currentClass] || [];
-  students.forEach(name => {
-    const base = calculateBaseO(currentClass, name);
-    const current = calculateCurrentO(currentClass, name);
-    const adjustment =
-      current - base;
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${escapeHtml(name)}</td>
-      <td>${formatCircle(base)}</td>
-      <td>
-        <input
-          type="number"
-          step="0.5"
-          class="all-edit-input"
-          data-name="${escapeHtml(name)}"
-          value="${adjustment}"
-        >
-      </td>
-      <td>${formatCircle(current)}</td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
-function saveAllEdit() {
-  const inputs =
-    document.querySelectorAll('.all-edit-input');
-  if (!deductions[currentClass]) {
-    deductions[currentClass] = {};
-  }
-  inputs.forEach(input => {
-    const name = input.dataset.name;
-    const value = parseFloat(input.value);
-    deductions[currentClass][name] =
-      isNaN(value) ? 0 : value;
-  });
-  saveAllData();
-  alert('저장되었습니다.');
-  showMain();
-}
-/* =========================
-   메인으로
-========================= */
-function showMain() {
-  document.getElementById('setupSection').classList.add('hidden');
-  document.getElementById('editSection').classList.add('hidden');
-  document.getElementById('allEditSection').classList.add('hidden');
-  document.getElementById('mainSection').classList.remove('hidden');
-  document.getElementById('currentClassTitle').textContent =
-    `🏫 ${currentClass}`;
-  loadDailyRecords();
-}
-/* =========================
-   초기화
-========================= */
-function resetApp() {
-  if (!confirm('모든 반, 학생, 식사 기록을 삭제할까요?')) {
-    return;
-  }
-  localStorage.removeItem(CLASS_KEY);
-  localStorage.removeItem(RECORD_KEY);
-  localStorage.removeItem(DEDUCTION_KEY);
-  classData = {};
-  records = {};
-  deductions = {};
-  currentClass = '';
-  location.reload();
-}
-/* =========================
-   표시용 함수
-========================= */
-function formatCircle(value) {
-  if (value === 0) {
-    return '0개';
-  }
-  if (value % 1 === 0) {
-    return `${value}개`;
-  }
-  return `${value}개`;
-}
-function escapeHtml(value) {
-  return String(value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
-function escapeJs(value) {
-  return String(value)
-    .replace(/\\/g, '\\\\')
-    .replace(/'/g, "\\'");
-}
-/* =========================
-   시작
-========================= */
-init();
+    /* =====================================================
+       전체 학생 O 체크
+    ===================================================== */
+    function checkAllOForCurrentView() {
+        const date =
+            document.getElementById(
+                'datePicker'
+            ).value;
+        const selectedTarget =
+            document.getElementById(
+                'viewClassSelect'
+            ).value;
+        if (!selectedTarget) return;
+        if (!records[date]) {
+            records[date] = {};
+        }
+        if (selectedTarget === "ALL") {
+            Object.keys(classData)
+                .forEach(className => {
+                    if (
+                        !records[date][className]
+                    ) {
+                        records[date][className] = {};
+                    }
+                    classData[className]
+                        .forEach(name => {
+                            records[date]
+                                [className]
+                                [name] = 'O';
+                        });
+                });
+        } else {
+            const className =
+                selectedTarget;
+            if (
+                !records[date][className]
+            ) {
+                records[date][className] = {};
+            }
+            classData[className]
+                .forEach(name => {
+                    records[date]
+                        [className]
+                        [name] = 'O';
+                });
+        }
+        saveData();
+        loadDailyRecords();
+    }
+    /* =====================================================
+       기본 동그라미 계산
+       O = 1개
+       A = 0.5개
+       X = 0개
+    ===================================================== */
+    function calculateBaseO(
+        className,
+        name
+    ) {
+        let totalO = 0;
+        let totalA = 0;
+        for (let date in records) {
+            if (
+                records[date][className] &&
+                records[date][className][name]
+            ) {
+                if (
+                    records[date]
+                        [className]
+                        [name] === 'O'
+                ) {
+                    totalO++;
+                }
+                if (
+                    records[date]
+                        [className]
+                        [name] === 'A'
+                ) {
+                    totalA++;
+                }
+            }
+        }
+        return totalO + (totalA * 0.5);
+    }
+    /* =====================================================
+       실제 현재 동그라미 계산
+       기본 동그라미
+       +
+       상품교환 조정값
+    ===================================================== */
+    function calculateCurrentO(
+        className,
+        name
+    ) {
+        const baseO =
+            calculateBaseO(
+                className,
+                name
+            );
+        if (!deductions[className]) {
+            deductions[className] = {};
+        }
+        const adjustment =
+            deductions[className][name] || 0;
+        return baseO + adjustment;
+    }
+    /* =====================================================
+       🎁 상품교환
+       숫자 입력
+       [차감] → 입력한 숫자만큼 차감
+       [추가] → 입력한 숫자만큼 추가
+       [취소] → 팝업 닫기
+    ===================================================== */
+    function exchangeO(
+        className,
+        name
+    ) {
+        const currentO =
+            calculateCurrentO(
+                className,
+                name
+            );
+        const displayCurrent =
+            currentO % 1 === 0
+                ? currentO
+                : currentO.toFixed(1);
+        /* 팝업 배경 */
+        const overlay =
+            document.createElement('div');
+        overlay.className =
+            'exchange-modal-overlay';
+        /* 팝업 */
+        const modal =
+            document.createElement('div');
+        modal.className =
+            'exchange-modal';
+        modal.innerHTML = `
+            <h3 style="margin-top:0;">
+                🎁 상품교환
+            </h3>
+            <p style="margin-bottom:5px;">
+                <strong>${className}</strong>
+            </p>
+            <p style="margin-top:5px;">
+                ${name} 학생
+            </p>
+            <p style="
+                font-size:18px;
+                color:#2E7D32;
+                font-weight:bold;
+            ">
+                현재 동그라미: ${displayCurrent}개
+            </p>
+            <p style="
+                font-size:14px;
+                color:#777;
+                margin-bottom:10px;
+            ">
+                차감하거나 추가할 동그라미 수를 입력하세요.
+            </p>
+            <!-- 숫자 입력창만 남김 -->
+            <div class="exchange-input-row">
+                <input
+                    type="number"
+                    id="exchangeAmountInput"
+                    class="exchange-input"
+                    min="0.5"
+                    step="0.5"
+                    value="1"
+                    inputmode="decimal"
+                >
+            </div>
+            <!-- 차감 / 추가 / 취소 -->
+            <div class="exchange-action-row">
+                <button
+                    type="button"
+                    class="exchange-subtract-btn"
+                    id="exchangeSubtractBtn">
+                    차감
+                </button>
+                <button
+                    type="button"
+                    class="exchange-add-btn"
+                    id="exchangeAddBtn">
+                    추가
+                </button>
+                <button
+                    type="button"
+                    class="exchange-cancel-btn"
+                    id="exchangeCancelBtn">
+                    취소
+                </button>
+            </div>
+        `;
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+        const input =
+            document.getElementById(
+                'exchangeAmountInput'
+            );
+        const subtractBtn =
+            document.getElementById(
+                'exchangeSubtractBtn'
+            );
+        const addBtn =
+            document.getElementById(
+                'exchangeAddBtn'
+            );
+        const cancelBtn =
+            document.getElementById(
+                'exchangeCancelBtn'
+            );
+        input.focus();
+        input.select();
+        /* 팝업 닫기 */
+        function closeModal() {
+            overlay.remove();
+        }
+        /* =====================================================
+           상품교환 실제 처리
+        ===================================================== */
+        function applyExchange(
+            amount,
+            isAddition
+        ) {
+            amount =
+                parseFloat(amount);
+            if (
+                isNaN(amount) ||
+                amount <= 0
+            ) {
+                alert(
+                    "0보다 큰 숫자를 입력해주세요!"
+                );
+                input.focus();
+                return;
+            }
+            /*
+             * 추가:
+             * 현재 동그라미 + 입력값
+             *
+             * 차감:
+             * 현재 동그라미 - 입력값
+             */
+            const adjustment =
+                isAddition
+                    ? amount
+                    : -amount;
+            const newO =
+                currentO + adjustment;
+            /* 차감 결과가 0보다 작으면 안 됨 */
+            if (newO < 0) {
+                alert(
+                    `현재 동그라미가 ${displayCurrent}개이므로\n` +
+                    `그보다 많이 차감할 수 없습니다!`
+                );
+                return;
+            }
+            if (!deductions[className]) {
+                deductions[className] = {};
+            }
+            /*
+             * 기본 동그라미와
+             * 상품교환 조정값을 분리해서 저장
+             */
+            const baseO =
+                calculateBaseO(
+                    className,
+                    name
+                );
+            deductions[className][name] =
+                newO - baseO;
+            saveData();
+            closeModal();
+            loadDailyRecords();
+            if (isAddition) {
+                alert(
+                    `${amount}개를 추가했습니다! 🎁`
+                );
+            } else {
+                alert(
+                    `${amount}개를 차감했습니다! 🎁`
+                );
+            }
+        }
+        /* =====================================================
+           [차감] 버튼
+        ===================================================== */
+        subtractBtn.addEventListener(
+            'click',
+            function() {
+                applyExchange(
+                    input.value,
+                    false
+                );
+            }
+        );
+        /* =====================================================
+           [추가] 버튼
+        ===================================================== */
+        addBtn.addEventListener(
+            'click',
+            function() {
+                applyExchange(
+                    input.value,
+                    true
+                );
+            }
+        );
+        /* =====================================================
+           [취소] 버튼
+        ===================================================== */
+        cancelBtn.addEventListener(
+            'click',
+            closeModal
+        );
+        /* =====================================================
+           키보드 입력
+        ===================================================== */
+        input.addEventListener(
+            'keydown',
+            function(event) {
+                /*
+                 * Enter
+                 * → 숫자만큼 차감
+                 */
+                if (
+                    event.key === 'Enter'
+                ) {
+                    event.preventDefault();
+                    applyExchange(
+                        input.value,
+                        false
+                    );
+                }
+                /*
+                 * Escape
+                 * → 취소
+                 */
+                if (
+                    event.key === 'Escape'
+                ) {
+                    event.preventDefault();
+                    closeModal();
+                }
+            }
+        );
+        /* =====================================================
+           팝업 바깥쪽 클릭
+        ===================================================== */
+        overlay.addEventListener(
+            'click',
+            function(event) {
+                if (
+                    event.target === overlay
+                ) {
+                    closeModal();
+                }
+            }
+        );
+    }
+    /* =====================================================
+       데이터 저장
+    ===================================================== */
+    function saveData() {
+        localStorage.setItem(
+            'meal_v2_classes',
+            JSON.stringify(classData)
+        );
+        localStorage.setItem(
+            'meal_v2_records',
+            JSON.stringify(records)
+        );
+        localStorage.setItem(
+            'meal_v2_deductions',
+            JSON.stringify(deductions)
+        );
+    }
+    /* =====================================================
+       전체 데이터 초기화
+    ===================================================== */
+    function resetAllData() {
+        if (
+            confirm(
+                "정말 모든 데이터를 싹~ 지우시겠습니까?\n" +
+                "(이 작업은 되돌릴 수 없습니다!)"
+            )
+        ) {
+            localStorage.removeItem(
+                'meal_v2_classes'
+            );
+            localStorage.removeItem(
+                'meal_v2_records'
+            );
+            localStorage.removeItem(
+                'meal_v2_deductions'
+            );
+            classData = {};
+            records = {};
+            deductions = {};
+            document.getElementById(
+                'studentInput'
+            ).value = "";
+            showSetupSection();
+        }
+    }
+    /* =====================================================
+       이름 등에 특수문자가 들어가도
+       onclick이 깨지지 않도록 처리
+    ===================================================== */
+    function escapeForAttribute(value) {
+        return String(value)
+            .replace(/\\/g, '\\\\')
+            .replace(/'/g, "\\'");
+    }
 </script>
 </body>
 </html>
