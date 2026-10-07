@@ -325,6 +325,63 @@
             color: #2E7D32;
             font-size: 16px;
         }
+        /* =====================================================
+           상품교환 팝업
+        ===================================================== */
+        .exchange-modal-overlay {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        .exchange-modal {
+            background-color: white;
+            padding: 25px;
+            border-radius: 20px;
+            width: min(85%, 350px);
+            box-sizing: border-box;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        .exchange-input-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            margin-top: 15px;
+        }
+        .exchange-input {
+            width: 90px;
+            padding: 9px 8px;
+            border: 2px solid #CE93D8;
+            border-radius: 10px;
+            font-family: 'Jua', sans-serif;
+            font-size: 18px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .exchange-add-btn {
+            background-color: #CE93D8;
+            color: white;
+            padding: 9px 14px;
+            margin: 0;
+        }
+        .exchange-add-btn:hover {
+            background-color: #AB47BC;
+        }
+        .exchange-confirm-btn {
+            background-color: #FFD54F;
+            color: #5D4037;
+        }
+        .exchange-cancel-btn {
+            background-color: #EF9A9A;
+            color: white;
+        }
         /* 모바일 화면 */
         @media (max-width: 600px) {
             body {
@@ -360,6 +417,10 @@
             .btn-exchange {
                 font-size: 13px;
                 padding: 6px 8px;
+            }
+            .exchange-modal {
+                width: 90%;
+                padding: 20px 15px;
             }
         }
     </style>
@@ -412,7 +473,7 @@
             <input
                 type="date"
                 id="datePicker"
-                onchange="loadDailyRecords()"
+                onchange="loadDailyRecords"
             >
             <div class="class-selector-group">
                 <select
@@ -626,7 +687,9 @@
                 .map(s => s.trim())
                 .filter(s => s !== "");
         if (parsed.length === 0) {
-            alert("학생 이름을 1명 이상 입력해주세요!");
+            alert(
+                "학생 이름을 1명 이상 입력해주세요!"
+            );
             return;
         }
         classData[className] = parsed;
@@ -1114,7 +1177,6 @@
     }
     /* =====================================================
        기본 동그라미 계산
-       
        O = 1개
        A = 0.5개
        X = 0개
@@ -1150,7 +1212,6 @@
     }
     /* =====================================================
        실제 현재 동그라미 계산
-       
        기본 동그라미
        +
        상품교환 조정값
@@ -1173,10 +1234,13 @@
     }
     /* =====================================================
        🎁 상품교환
-       
-       +3 → 3개 추가
-       -2 → 2개 차감
-       3  → 3개 추가
+       숫자 입력 + [확인]
+       → 입력한 숫자만큼 차감
+       [추가] + 숫자 입력
+       → 입력한 숫자만큼 추가
+       예:
+       3 입력 후 확인 → 3개 차감
+       3 입력 후 [추가] → 3개 추가
     ===================================================== */
     function exchangeO(
         className,
@@ -1191,63 +1255,241 @@
             currentO % 1 === 0
                 ? currentO
                 : currentO.toFixed(1);
-        let amount =
-            prompt(
-                `[${className} ${name}]\n\n` +
-                `현재 동그라미: ${displayCurrent}개\n\n` +
-                `교환할 개수를 입력하세요.\n` +
-                `예: +3 → 3개 추가\n` +
-                `예: -2 → 2개 차감\n` +
-                `예: 3 → 3개 추가`,
-                "1"
+        /* 팝업 배경 */
+        const overlay =
+            document.createElement('div');
+        overlay.className =
+            'exchange-modal-overlay';
+        /* 팝업 */
+        const modal =
+            document.createElement('div');
+        modal.className =
+            'exchange-modal';
+        modal.innerHTML = `
+            <h3 style="margin-top:0;">
+                🎁 상품교환
+            </h3>
+            <p style="margin-bottom:5px;">
+                <strong>${className}</strong>
+            </p>
+            <p style="margin-top:5px;">
+                ${name} 학생
+            </p>
+            <p style="
+                font-size:18px;
+                color:#2E7D32;
+                font-weight:bold;
+            ">
+                현재 동그라미: ${displayCurrent}개
+            </p>
+            <p style="
+                font-size:14px;
+                color:#777;
+                margin-bottom:10px;
+            ">
+                숫자 입력 후 확인 → 차감<br>
+                <span style="color:#AB47BC;">
+                    [추가] → 숫자만큼 추가
+                </span>
+            </p>
+            <div class="exchange-input-row">
+                <!-- 추가 버튼을 입력창 앞에 배치 -->
+                <button
+                    type="button"
+                    class="exchange-add-btn"
+                    id="exchangeAddBtn">
+                    추가
+                </button>
+                <input
+                    type="number"
+                    id="exchangeAmountInput"
+                    class="exchange-input"
+                    min="0.5"
+                    step="0.5"
+                    value="1"
+                    inputmode="decimal"
+                >
+            </div>
+            <div style="margin-top:20px;">
+                <button
+                    type="button"
+                    class="exchange-confirm-btn"
+                    id="exchangeConfirmBtn">
+                    확인
+                </button>
+                <button
+                    type="button"
+                    class="exchange-cancel-btn"
+                    id="exchangeCancelBtn">
+                    취소
+                </button>
+            </div>
+        `;
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+        const input =
+            document.getElementById(
+                'exchangeAmountInput'
             );
-        if (amount === null) {
-            return;
+        const addBtn =
+            document.getElementById(
+                'exchangeAddBtn'
+            );
+        const confirmBtn =
+            document.getElementById(
+                'exchangeConfirmBtn'
+            );
+        const cancelBtn =
+            document.getElementById(
+                'exchangeCancelBtn'
+            );
+        input.focus();
+        input.select();
+        /* 팝업 닫기 */
+        function closeModal() {
+            overlay.remove();
         }
-        amount = parseFloat(amount);
-        if (
-            isNaN(amount) ||
-            amount === 0
+        /* =====================================================
+           상품교환 실제 처리
+        ===================================================== */
+        function applyExchange(
+            amount,
+            isAddition
         ) {
-            alert(
-                "0이 아닌 숫자를 입력해주세요!"
-            );
-            return;
+            amount =
+                parseFloat(amount);
+            if (
+                isNaN(amount) ||
+                amount <= 0
+            ) {
+                alert(
+                    "0보다 큰 숫자를 입력해주세요!"
+                );
+                input.focus();
+                return;
+            }
+            /*
+             * [추가] 버튼
+             * → +amount
+             *
+             * [확인] 버튼
+             * → -amount
+             */
+            const adjustment =
+                isAddition
+                    ? amount
+                    : -amount;
+            const newO =
+                currentO + adjustment;
+            /* 차감 결과가 0보다 작으면 안 됨 */
+            if (newO < 0) {
+                alert(
+                    `현재 동그라미가 ${displayCurrent}개이므로\n` +
+                    `그보다 많이 차감할 수 없습니다!`
+                );
+                return;
+            }
+            if (!deductions[className]) {
+                deductions[className] = {};
+            }
+            /*
+             * 식사 기록으로 얻은 기본 동그라미와
+             * 상품교환으로 조정한 값을 분리해서 저장
+             */
+            const baseO =
+                calculateBaseO(
+                    className,
+                    name
+                );
+            deductions[className][name] =
+                newO - baseO;
+            saveData();
+            closeModal();
+            loadDailyRecords();
+            if (isAddition) {
+                alert(
+                    `${amount}개를 추가했습니다! 🎁`
+                );
+            } else {
+                alert(
+                    `${amount}개를 차감했습니다! 🎁`
+                );
+            }
         }
-        const newO =
-            currentO + amount;
-        if (newO < 0) {
-            alert(
-                `현재 동그라미가 ${displayCurrent}개이므로\n` +
-                `그보다 많이 차감할 수 없습니다!`
-            );
-            return;
-        }
-        if (!deductions[className]) {
-            deductions[className] = {};
-        }
-        /*
-         * 식사 기록으로 얻은 기본 동그라미와
-         * 상품교환으로 조정한 값을 분리해서 저장
-         */
-        const baseO =
-            calculateBaseO(
-                className,
-                name
-            );
-        deductions[className][name] =
-            newO - baseO;
-        saveData();
-        loadDailyRecords();
-        if (amount > 0) {
-            alert(
-                `${amount}개를 추가했습니다! 🎁`
-            );
-        } else {
-            alert(
-                `${Math.abs(amount)}개를 차감했습니다! 🎁`
-            );
-        }
+        /* =====================================================
+           [추가] 버튼
+        ===================================================== */
+        addBtn.addEventListener(
+            'click',
+            function() {
+                applyExchange(
+                    input.value,
+                    true
+                );
+            }
+        );
+        /* =====================================================
+           [확인] 버튼
+           → 숫자만큼 차감
+        ===================================================== */
+        confirmBtn.addEventListener(
+            'click',
+            function() {
+                applyExchange(
+                    input.value,
+                    false
+                );
+            }
+        );
+        /* =====================================================
+           [취소] 버튼
+        ===================================================== */
+        cancelBtn.addEventListener(
+            'click',
+            closeModal
+        );
+        /* =====================================================
+           키보드 입력
+        ===================================================== */
+        input.addEventListener(
+            'keydown',
+            function(event) {
+                /*
+                 * Enter
+                 * → 숫자만큼 차감
+                 */
+                if (
+                    event.key === 'Enter'
+                ) {
+                    applyExchange(
+                        input.value,
+                        false
+                    );
+                }
+                /*
+                 * Escape
+                 * → 취소
+                 */
+                if (
+                    event.key === 'Escape'
+                ) {
+                    closeModal();
+                }
+            }
+        );
+        /* =====================================================
+           팝업 바깥쪽 클릭
+        ===================================================== */
+        overlay.addEventListener(
+            'click',
+            function(event) {
+                if (
+                    event.target === overlay
+                ) {
+                    closeModal();
+                }
+            }
+        );
     }
     /* =====================================================
        데이터 저장
