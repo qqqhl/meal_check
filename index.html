@@ -116,6 +116,47 @@
             padding: 5px 12px;
             margin-bottom: 10px;
         }
+        /* 배수 버튼 */
+        .btn-mult {
+            background-color: #FFF8E1;
+            color: #F57C00;
+            border: 2px solid #FFB74D;
+            font-size: 14px;
+            padding: 5px 12px;
+            margin-bottom: 10px;
+        }
+        .btn-mult.active {
+            background-color: #FF9800;
+            color: white;
+            border-color: #F57C00;
+            box-shadow: 0 3px 8px rgba(255,152,0,0.4);
+        }
+        /* 한 줄 고정 툴바 */
+        .toolbar {
+            display: flex;
+            flex-wrap: nowrap;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+        .toolbar button {
+            margin: 0;
+            white-space: nowrap;
+            flex: 0 0 auto;
+            box-sizing: border-box;
+        }
+        .toolbar button:hover {
+            transform: none;
+        }
+        .btn-mult,
+        .btn-all-o {
+            margin-bottom: 0;
+        }
+        /* 식사 체크 칸은 줄바꿈 금지 */
+        td.meal-cell {
+            white-space: nowrap;
+        }
         /* 도형 버튼 */
         .btn-check {
             width: 44px;
@@ -131,9 +172,23 @@
             cursor: pointer;
             transition: 0.15s;
             margin: 0 3px;
+            position: relative;
         }
         .btn-check:hover {
             transform: scale(1.08);
+        }
+        /* ×2, ×3 배지 */
+        .mult-badge {
+            position: absolute;
+            top: -8px;
+            right: -6px;
+            background-color: #FF9800;
+            color: white;
+            font-size: 11px;
+            line-height: 1;
+            padding: 3px 5px;
+            border-radius: 8px;
+            pointer-events: none;
         }
         .shape-circle {
             width: 18px;
@@ -238,24 +293,12 @@
             background: #fff;
         }
         /* 반별 색상 */
-        .row-class-0 {
-            background-color: #FFFDE7;
-        }
-        .row-class-1 {
-            background-color: #E8F5E9;
-        }
-        .row-class-2 {
-            background-color: #E3F2FD;
-        }
-        .row-class-3 {
-            background-color: #F3E5F5;
-        }
-        .row-class-4 {
-            background-color: #FFECEE;
-        }
-        .row-class-5 {
-            background-color: #FFF3E0;
-        }
+        .row-class-0 { background-color: #FFFDE7; }
+        .row-class-1 { background-color: #E8F5E9; }
+        .row-class-2 { background-color: #E3F2FD; }
+        .row-class-3 { background-color: #F3E5F5; }
+        .row-class-4 { background-color: #FFECEE; }
+        .row-class-5 { background-color: #FFF3E0; }
         .header-class-0 {
             background-color: #FFFDE7;
             color: #F57F17;
@@ -325,9 +368,7 @@
             color: #2E7D32;
             font-size: 16px;
         }
-        /* =====================================================
-           상품교환 팝업
-        ===================================================== */
+        /* 상품교환 팝업 */
         .exchange-modal-overlay {
             position: fixed;
             left: 0;
@@ -365,7 +406,6 @@
             text-align: center;
             box-sizing: border-box;
         }
-        /* 하단 차감 / 추가 / 취소 버튼 */
         .exchange-action-row {
             display: flex;
             justify-content: center;
@@ -418,9 +458,16 @@
                 font-size: 15px;
             }
             .btn-check {
-                width: 38px;
-                height: 38px;
+                width: 34px;
+                height: 34px;
                 margin: 0 1px;
+            }
+            .toolbar {
+                gap: 4px;
+            }
+            .toolbar button {
+                font-size: 13px;
+                padding: 5px 8px;
             }
             .shape-circle {
                 width: 15px;
@@ -453,6 +500,7 @@
 <body>
 <div class="container">
     <h1>🍽️ 냠냠 튼튼 점검 대장 🥦</h1>
+
     <!-- ==================== 명단 설정 ==================== -->
     <div id="setupSection" class="setup-section">
         <h2>👋 환영합니다 선생님!</h2>
@@ -479,8 +527,7 @@
         </div>
         <textarea
             id="studentInput"
-            placeholder="예: 김철수, 이영희, 박민수">
-        </textarea>
+            placeholder="예: 김철수, 이영희, 박민수"></textarea>
         <br>
         <button class="btn-save" onclick="saveClass()">
             이 반 명단 추가하기 ➕
@@ -492,6 +539,7 @@
             명단 설정 완료! 점검하러 가기 🚀
         </button>
     </div>
+
     <!-- ==================== 메인 ==================== -->
     <div id="mainSection" class="main-section">
         <div class="header-controls">
@@ -513,11 +561,17 @@
                 </button>
             </div>
         </div>
-        <div style="text-align: right; margin-bottom: 5px;">
+        <div class="toolbar">
+            <button id="multBtn2" class="btn-mult" onclick="toggleMultiplier(2)">
+                2배
+            </button>
+            <button id="multBtn3" class="btn-mult" onclick="toggleMultiplier(3)">
+                3배
+            </button>
             <button
                 class="btn-all-o"
                 onclick="checkAllOForCurrentView()">
-                ✨ 전체 학생 ⭕ 일괄 체크
+                ✨ 전체 ⭕ 일괄 체크
             </button>
         </div>
         <div id="dynamicContentContainer">
@@ -537,6 +591,7 @@
             </button>
         </div>
     </div>
+
     <!-- ==================== 개별 명단 수정 ==================== -->
     <div id="editSection" class="edit-section">
         <h2 id="editClassTitle">
@@ -561,6 +616,7 @@
             취소 ❌
         </button>
     </div>
+
     <!-- ==================== 전체 명단 수정 ==================== -->
     <div id="allEditSection" class="edit-section">
         <h2>전교생 명단 일괄 수정</h2>
@@ -570,8 +626,7 @@
         </p>
         <textarea
             id="allEditStudentInput"
-            placeholder="[1학년 1반]&#10;김철수, 이영희&#10;&#10;[2학년 1반]&#10;박민수, 홍길동">
-        </textarea>
+            placeholder="[1학년 1반]&#10;김철수, 이영희&#10;&#10;[2학년 1반]&#10;박민수, 홍길동"></textarea>
         <br>
         <button
             class="btn-save"
@@ -585,6 +640,7 @@
         </button>
     </div>
 </div>
+
 <script>
     /* =====================================================
        데이터
@@ -592,17 +648,19 @@
     let classData = {};
     let records = {};
     let deductions = {};
+    let multipliers = {};        // 날짜/반/이름별 배수 (2, 3)
+    let activeMultiplier = 1;    // 현재 배수 모드 (1 = 꺼짐)
     let editingTargetClass = "";
+
     /* =====================================================
        페이지 시작
     ===================================================== */
     window.onload = function() {
-        const savedClasses =
-            localStorage.getItem('meal_v2_classes');
-        const savedRecords =
-            localStorage.getItem('meal_v2_records');
-        const savedDeductions =
-            localStorage.getItem('meal_v2_deductions');
+        const savedClasses = localStorage.getItem('meal_v2_classes');
+        const savedRecords = localStorage.getItem('meal_v2_records');
+        const savedDeductions = localStorage.getItem('meal_v2_deductions');
+        const savedMultipliers = localStorage.getItem('meal_v2_multipliers');
+
         if (savedClasses) {
             classData = JSON.parse(savedClasses);
         }
@@ -612,8 +670,13 @@
         if (savedDeductions) {
             deductions = JSON.parse(savedDeductions);
         }
+        if (savedMultipliers) {
+            multipliers = JSON.parse(savedMultipliers);
+        }
+
         document.getElementById('datePicker').value =
             new Date().toISOString().substring(0, 10);
+
         if (Object.keys(classData).length > 0) {
             updateClassSelector();
             showMainSection();
@@ -621,323 +684,266 @@
             showSetupSection();
         }
     };
+
     /* =====================================================
        화면 전환
     ===================================================== */
     function hideAllSections() {
-        document
-            .getElementById('setupSection')
-            .classList.remove('active');
-        document
-            .getElementById('mainSection')
-            .classList.remove('active');
-        document
-            .getElementById('editSection')
-            .classList.remove('active');
-        document
-            .getElementById('allEditSection')
-            .classList.remove('active');
+        document.getElementById('setupSection').classList.remove('active');
+        document.getElementById('mainSection').classList.remove('active');
+        document.getElementById('editSection').classList.remove('active');
+        document.getElementById('allEditSection').classList.remove('active');
     }
+
     function showSetupSection() {
         hideAllSections();
-        document
-            .getElementById('setupSection')
-            .classList.add('active');
+        document.getElementById('setupSection').classList.add('active');
         updateSavedClassesInfo();
     }
+
     function showMainSection() {
         hideAllSections();
-        document
-            .getElementById('mainSection')
-            .classList.add('active');
+        document.getElementById('mainSection').classList.add('active');
         loadDailyRecords();
     }
+
     /* =====================================================
        명단 수정 화면
     ===================================================== */
     function openEditSection() {
         const selectedTarget =
             document.getElementById('viewClassSelect').value;
+
         hideAllSections();
+
         if (selectedTarget === "ALL") {
-            document
-                .getElementById('allEditSection')
-                .classList.add('active');
+            document.getElementById('allEditSection').classList.add('active');
             let textOutput = "";
             Object.keys(classData)
                 .sort()
                 .forEach(className => {
                     textOutput += `[${className}]\n`;
-                    textOutput +=
-                        classData[className].join(', ');
+                    textOutput += classData[className].join(', ');
                     textOutput += "\n\n";
                 });
-            document.getElementById(
-                'allEditStudentInput'
-            ).value = textOutput.trim();
+            document.getElementById('allEditStudentInput').value =
+                textOutput.trim();
         } else {
             if (!selectedTarget) return;
             editingTargetClass = selectedTarget;
-            document
-                .getElementById('editSection')
-                .classList.add('active');
-            document.getElementById(
-                'editClassTitle'
-            ).innerText =
+            document.getElementById('editSection').classList.add('active');
+            document.getElementById('editClassTitle').innerText =
                 `${selectedTarget} 명단 수정`;
-            document.getElementById(
-                'editStudentInput'
-            ).value =
+            document.getElementById('editStudentInput').value =
                 classData[selectedTarget].join(', ');
         }
     }
+
     function cancelEdit() {
         showMainSection();
     }
+
     /* =====================================================
        반 추가
     ===================================================== */
     function saveClass() {
-        const grade =
-            document.getElementById('gradeSelect').value;
-        const classNum =
-            document.getElementById('classSelect').value;
-        const className =
-            `${grade}학년 ${classNum}반`;
-        const input =
-            document.getElementById('studentInput').value;
-        const parsed =
-            input
-                .split(/[\n,]+/)
-                .map(s => s.trim())
-                .filter(s => s !== "");
+        const grade = document.getElementById('gradeSelect').value;
+        const classNum = document.getElementById('classSelect').value;
+        const className = `${grade}학년 ${classNum}반`;
+        const input = document.getElementById('studentInput').value;
+
+        const parsed = input
+            .split(/[\n,]+/)
+            .map(s => s.trim())
+            .filter(s => s !== "");
+
         if (parsed.length === 0) {
-            alert(
-                "학생 이름을 1명 이상 입력해주세요!"
-            );
+            alert("학생 이름을 1명 이상 입력해주세요!");
             return;
         }
+
         classData[className] = parsed;
+
         if (!deductions[className]) {
             deductions[className] = {};
         }
         parsed.forEach(name => {
-            if (
-                deductions[className][name] === undefined
-            ) {
+            if (deductions[className][name] === undefined) {
                 deductions[className][name] = 0;
             }
         });
+
         saveData();
-        document.getElementById(
-            'studentInput'
-        ).value = "";
-        alert(
-            `${className} 명단이 성공적으로 추가되었습니다!`
-        );
+        document.getElementById('studentInput').value = "";
+        alert(`${className} 명단이 성공적으로 추가되었습니다!`);
         updateSavedClassesInfo();
     }
+
     /* =====================================================
        개별 명단 수정
     ===================================================== */
     function saveEditedClass() {
-        const currentClass =
-            editingTargetClass;
-        const input =
-            document.getElementById(
-                'editStudentInput'
-            ).value;
-        const parsed =
-            input
-                .split(/[\n,]+/)
-                .map(s => s.trim())
-                .filter(s => s !== "");
+        const currentClass = editingTargetClass;
+        const input = document.getElementById('editStudentInput').value;
+
+        const parsed = input
+            .split(/[\n,]+/)
+            .map(s => s.trim())
+            .filter(s => s !== "");
+
         if (parsed.length === 0) {
-            alert(
-                "학생 이름을 최소 1명 이상 유지해야 합니다!"
-            );
+            alert("학생 이름을 최소 1명 이상 유지해야 합니다!");
             return;
         }
+
         classData[currentClass] = parsed;
+
         if (!deductions[currentClass]) {
             deductions[currentClass] = {};
         }
         parsed.forEach(name => {
-            if (
-                deductions[currentClass][name] === undefined
-            ) {
+            if (deductions[currentClass][name] === undefined) {
                 deductions[currentClass][name] = 0;
             }
         });
+
         saveData();
-        alert(
-            '명단이 성공적으로 수정되었습니다! 🌟'
-        );
+        alert('명단이 성공적으로 수정되었습니다! 🌟');
         showMainSection();
     }
+
     /* =====================================================
        전체 명단 수정
     ===================================================== */
     function saveAllEditedClasses() {
-        const rawText =
-            document.getElementById(
-                'allEditStudentInput'
-            ).value;
-        const blocks =
-            rawText.split('[');
+        const rawText = document.getElementById('allEditStudentInput').value;
+        const blocks = rawText.split('[');
         let newClassData = {};
+
         blocks.forEach(block => {
             if (!block.trim()) return;
-            const lines =
-                block.split(']');
+
+            const lines = block.split(']');
             if (lines.length < 2) return;
-            const className =
-                lines[0].trim();
-            const studentText =
-                lines.slice(1).join(']').trim();
-            const students =
-                studentText
-                    .split(/[\n,]+/)
-                    .map(s => s.trim())
-                    .filter(s => s !== "");
-            if (
-                className &&
-                students.length > 0
-            ) {
-                newClassData[className] =
-                    students;
+
+            const className = lines[0].trim();
+            const studentText = lines.slice(1).join(']').trim();
+            const students = studentText
+                .split(/[\n,]+/)
+                .map(s => s.trim())
+                .filter(s => s !== "");
+
+            if (className && students.length > 0) {
+                newClassData[className] = students;
+
                 if (!deductions[className]) {
                     deductions[className] = {};
                 }
                 students.forEach(name => {
-                    if (
-                        deductions[className][name] === undefined
-                    ) {
+                    if (deductions[className][name] === undefined) {
                         deductions[className][name] = 0;
                     }
                 });
             }
         });
-        if (
-            Object.keys(newClassData).length === 0
-        ) {
+
+        if (Object.keys(newClassData).length === 0) {
             alert(
                 "올바른 형식으로 명단을 입력해주세요! " +
                 "(예: [1학년 1반] 김철수, 이영희)"
             );
             return;
         }
+
         classData = newClassData;
         saveData();
-        alert(
-            '전교생 명단이 성공적으로 수정되었습니다! 🌟'
-        );
+        alert('전교생 명단이 성공적으로 수정되었습니다! 🌟');
         updateClassSelector();
         showMainSection();
     }
+
     /* =====================================================
        저장된 반 표시
     ===================================================== */
     function updateSavedClassesInfo() {
-        const infoDiv =
-            document.getElementById(
-                'savedClassesInfo'
-            );
-        const classes =
-            Object.keys(classData);
+        const infoDiv = document.getElementById('savedClassesInfo');
+        const classes = Object.keys(classData);
+
         if (classes.length === 0) {
-            infoDiv.innerText =
-                "현재 추가된 반이 없습니다.";
+            infoDiv.innerText = "현재 추가된 반이 없습니다.";
         } else {
-            infoDiv.innerText =
-                `✅ 저장된 반: ${classes.join(', ')}`;
+            infoDiv.innerText = `✅ 저장된 반: ${classes.join(', ')}`;
         }
     }
+
     /* =====================================================
        메인으로 이동
     ===================================================== */
     function goToMain() {
-        if (
-            Object.keys(classData).length === 0
-        ) {
-            alert(
-                "최소 1개 이상의 반 명단을 추가해주세요!"
-            );
+        if (Object.keys(classData).length === 0) {
+            alert("최소 1개 이상의 반 명단을 추가해주세요!");
             return;
         }
         updateClassSelector();
         showMainSection();
     }
+
     /* =====================================================
        반 선택 목록
     ===================================================== */
     function updateClassSelector() {
-        const selector =
-            document.getElementById(
-                'viewClassSelect'
-            );
-        const currentValue =
-            selector.value;
+        const selector = document.getElementById('viewClassSelect');
+        const currentValue = selector.value;
+
         selector.innerHTML = "";
-        const allOption =
-            document.createElement('option');
+
+        const allOption = document.createElement('option');
         allOption.value = "ALL";
-        allOption.innerText =
-            "🌟 전교생 통합 보기";
+        allOption.innerText = "🌟 전교생 통합 보기";
         selector.appendChild(allOption);
+
         Object.keys(classData)
             .sort()
             .forEach(className => {
-                const option =
-                    document.createElement('option');
-                option.value =
-                    className;
-                option.innerText =
-                    className;
+                const option = document.createElement('option');
+                option.value = className;
+                option.innerText = className;
                 selector.appendChild(option);
             });
+
         if (
             currentValue &&
-            (
-                currentValue === "ALL" ||
-                classData[currentValue]
-            )
+            (currentValue === "ALL" || classData[currentValue])
         ) {
-            selector.value =
-                currentValue;
+            selector.value = currentValue;
         }
     }
-    /* =====================================================
-       반 선택 변경
-    ===================================================== */
+
     function handleClassSelectorChange() {
         loadDailyRecords();
     }
+
     /* =====================================================
        학생 기록 테이블
     ===================================================== */
     function loadDailyRecords() {
-        const date =
-            document.getElementById(
-                'datePicker'
-            ).value;
+        const date = document.getElementById('datePicker').value;
         const selectedTarget =
-            document.getElementById(
-                'viewClassSelect'
-            ).value;
+            document.getElementById('viewClassSelect').value;
         const container =
-            document.getElementById(
-                'dynamicContentContainer'
-            );
+            document.getElementById('dynamicContentContainer');
+
         container.innerHTML = "";
+
         if (!selectedTarget) return;
+
         if (!records[date]) {
             records[date] = {};
         }
-        const sortedClasses =
-            Object.keys(classData).sort();
-        const table =
-            document.createElement('table');
+
+        const sortedClasses = Object.keys(classData).sort();
+
+        const table = document.createElement('table');
         table.innerHTML = `
             <thead>
                 <tr>
@@ -950,167 +956,104 @@
             <tbody id="unifiedTableBody"></tbody>
         `;
         container.appendChild(table);
-        const tbody =
-            document.getElementById(
-                'unifiedTableBody'
-            );
-        /* ===========================
-           전교생
-        =========================== */
+
+        const tbody = document.getElementById('unifiedTableBody');
+
         if (selectedTarget === "ALL") {
-            sortedClasses.forEach(
-                (className, classIndex) => {
-                    if (
-                        !records[date][className]
-                    ) {
-                        records[date][className] = {};
-                    }
-                    const students =
-                        classData[className];
-                    const colorIdx =
-                        classIndex % 6;
-                    const colorClass =
-                        `row-class-${colorIdx}`;
-                    const headerColorClass =
-                        `header-class-${colorIdx}`;
-                    const trHeader =
-                        document.createElement('tr');
-                    trHeader.innerHTML = `
-                        <td colspan="4"
-                            class="${headerColorClass}">
-                            📂 ${className}
-                        </td>
-                    `;
-                    tbody.appendChild(
-                        trHeader
-                    );
-                    students.forEach(name => {
-                        createStudentRow(
-                            tbody,
-                            date,
-                            className,
-                            name,
-                            colorClass
-                        );
-                    });
+            sortedClasses.forEach((className, classIndex) => {
+                if (!records[date][className]) {
+                    records[date][className] = {};
                 }
-            );
+
+                const students = classData[className];
+                const colorIdx = classIndex % 6;
+                const colorClass = `row-class-${colorIdx}`;
+                const headerColorClass = `header-class-${colorIdx}`;
+
+                const trHeader = document.createElement('tr');
+                trHeader.innerHTML = `
+                    <td colspan="4" class="${headerColorClass}">
+                        📂 ${className}
+                    </td>
+                `;
+                tbody.appendChild(trHeader);
+
+                students.forEach(name => {
+                    createStudentRow(tbody, date, className, name, colorClass);
+                });
+            });
         } else {
-            /* ===========================
-               특정 반
-            =========================== */
-            const className =
-                selectedTarget;
+            const className = selectedTarget;
             if (!classData[className]) return;
-            if (
-                !records[date][className]
-            ) {
+
+            if (!records[date][className]) {
                 records[date][className] = {};
             }
-            const students =
-                classData[className];
-            students.forEach(name => {
-                createStudentRow(
-                    tbody,
-                    date,
-                    className,
-                    name,
-                    ""
-                );
+
+            classData[className].forEach(name => {
+                createStudentRow(tbody, date, className, name, "");
             });
         }
     }
+
     /* =====================================================
        학생 한 명의 행 생성
     ===================================================== */
-    function createStudentRow(
-        tbody,
-        date,
-        className,
-        name,
-        colorClass
-    ) {
-        const tr =
-            document.createElement('tr');
+    function createStudentRow(tbody, date, className, name, colorClass) {
+        const tr = document.createElement('tr');
         if (colorClass) {
             tr.className = colorClass;
         }
+
         /* 이름 */
-        const tdName =
-            document.createElement('td');
-        tdName.innerText =
-            name;
-        tdName.style.fontWeight =
-            'bold';
+        const tdName = document.createElement('td');
+        tdName.innerText = name;
+        tdName.style.fontWeight = 'bold';
+
         /* 식사 체크 */
-        const tdChecks =
-            document.createElement('td');
-        const status =
-            records[date][className][name];
+        const tdChecks = document.createElement('td');
+        tdChecks.className = 'meal-cell';
+        const status = records[date][className][name];
+        const mult = getMultiplier(date, className, name);
+
+        const args =
+            `'${escapeForAttribute(date)}',` +
+            `'${escapeForAttribute(className)}',` +
+            `'${escapeForAttribute(name)}'`;
+
         tdChecks.innerHTML = `
             <button
-                class="btn-check ${
-                    status === 'O'
-                        ? 'selected-O'
-                        : ''
-                }"
-                onclick="checkMeal(
-                    '${escapeForAttribute(date)}',
-                    '${escapeForAttribute(className)}',
-                    '${escapeForAttribute(name)}',
-                    'O'
-                )">
+                class="btn-check ${status === 'O' ? 'selected-O' : ''}"
+                onclick="checkMeal(${args}, 'O')">
                 <div class="shape-circle"></div>
+                ${(status === 'O' && mult > 1) ? `<span class="mult-badge">×${mult}</span>` : ''}
             </button>
             <button
-                class="btn-check ${
-                    status === 'A'
-                        ? 'selected-A'
-                        : ''
-                }"
-                onclick="checkMeal(
-                    '${escapeForAttribute(date)}',
-                    '${escapeForAttribute(className)}',
-                    '${escapeForAttribute(name)}',
-                    'A'
-                )">
+                class="btn-check ${status === 'A' ? 'selected-A' : ''}"
+                onclick="checkMeal(${args}, 'A')">
                 <div class="shape-triangle"></div>
+                ${(status === 'A' && mult > 1) ? `<span class="mult-badge">×${mult}</span>` : ''}
             </button>
             <button
-                class="btn-check ${
-                    status === 'X'
-                        ? 'selected-X'
-                        : ''
-                }"
-                onclick="checkMeal(
-                    '${escapeForAttribute(date)}',
-                    '${escapeForAttribute(className)}',
-                    '${escapeForAttribute(name)}',
-                    'X'
-                )">
+                class="btn-check ${status === 'X' ? 'selected-X' : ''}"
+                onclick="checkMeal(${args}, 'X')">
                 <div class="shape-cross"></div>
             </button>
         `;
+
         /* 현재 동그라미 */
-        const tdTotalO =
-            document.createElement('td');
-        const finalO =
-            calculateCurrentO(
-                className,
-                name
-            );
-        const displayO =
-            finalO % 1 === 0
-                ? finalO
-                : finalO.toFixed(1);
+        const tdTotalO = document.createElement('td');
+        const finalO = calculateCurrentO(className, name);
+        const displayO = finalO % 1 === 0 ? finalO : finalO.toFixed(1);
+
         tdTotalO.innerHTML = `
             <span class="total-circle">
                 ${displayO}개
             </span>
         `;
+
         /* 상품교환 */
-        const tdExchange =
-            document.createElement('td');
+        const tdExchange = document.createElement('td');
         tdExchange.innerHTML = `
             <button
                 class="btn-exchange"
@@ -1121,172 +1064,173 @@
                 🎁 교환
             </button>
         `;
+
         tr.appendChild(tdName);
         tr.appendChild(tdChecks);
         tr.appendChild(tdTotalO);
         tr.appendChild(tdExchange);
         tbody.appendChild(tr);
     }
+
+    /* =====================================================
+       배수 모드
+    ===================================================== */
+    function toggleMultiplier(m) {
+        activeMultiplier = (activeMultiplier === m) ? 1 : m;
+        updateMultiplierButtons();
+    }
+
+    function updateMultiplierButtons() {
+        [2, 3].forEach(m => {
+            document
+                .getElementById('multBtn' + m)
+                .classList.toggle('active', activeMultiplier === m);
+        });
+    }
+
+    /* 저장된 배수 읽기 (없으면 1) */
+    function getMultiplier(date, className, name) {
+        return (
+            multipliers[date] &&
+            multipliers[date][className] &&
+            multipliers[date][className][name]
+        ) || 1;
+    }
+
+    /* 배수 저장 (1이면 삭제) */
+    function setMultiplier(date, className, name, m) {
+        if (m <= 1) {
+            if (multipliers[date] && multipliers[date][className]) {
+                delete multipliers[date][className][name];
+            }
+            return;
+        }
+        if (!multipliers[date]) {
+            multipliers[date] = {};
+        }
+        if (!multipliers[date][className]) {
+            multipliers[date][className] = {};
+        }
+        multipliers[date][className][name] = m;
+    }
+
     /* =====================================================
        식사 체크
     ===================================================== */
-    function checkMeal(
-        date,
-        className,
-        name,
-        status
-    ) {
+    function checkMeal(date, className, name, status) {
         if (!records[date][className]) {
             records[date][className] = {};
         }
-        if (
-            records[date][className][name]
-            === status
-        ) {
+
+        const current = records[date][className][name];
+        const currentMult = getMultiplier(date, className, name);
+
+        /* ❌는 배수 적용 안 함 */
+        const newMult = (status === 'X') ? 1 : activeMultiplier;
+
+        if (current === status && currentMult === newMult) {
+            /* 같은 상태 + 같은 배수 → 해제 */
             delete records[date][className][name];
+            setMultiplier(date, className, name, 1);
         } else {
-            records[date][className][name] =
-                status;
+            records[date][className][name] = status;
+            setMultiplier(date, className, name, newMult);
         }
+
         saveData();
         loadDailyRecords();
     }
+
     /* =====================================================
        전체 학생 O 체크
     ===================================================== */
     function checkAllOForCurrentView() {
-        const date =
-            document.getElementById(
-                'datePicker'
-            ).value;
+        const date = document.getElementById('datePicker').value;
         const selectedTarget =
-            document.getElementById(
-                'viewClassSelect'
-            ).value;
+            document.getElementById('viewClassSelect').value;
+
         if (!selectedTarget) return;
+
         if (!records[date]) {
             records[date] = {};
         }
-        if (selectedTarget === "ALL") {
-            Object.keys(classData)
-                .forEach(className => {
-                    if (
-                        !records[date][className]
-                    ) {
-                        records[date][className] = {};
-                    }
-                    classData[className]
-                        .forEach(name => {
-                            records[date]
-                                [className]
-                                [name] = 'O';
-                        });
-                });
-        } else {
-            const className =
-                selectedTarget;
-            if (
-                !records[date][className]
-            ) {
+
+        const targetClasses =
+            (selectedTarget === "ALL")
+                ? Object.keys(classData)
+                : [selectedTarget];
+
+        targetClasses.forEach(className => {
+            if (!classData[className]) return;
+
+            if (!records[date][className]) {
                 records[date][className] = {};
             }
-            classData[className]
-                .forEach(name => {
-                    records[date]
-                        [className]
-                        [name] = 'O';
-                });
-        }
+
+            classData[className].forEach(name => {
+                records[date][className][name] = 'O';
+                setMultiplier(date, className, name, activeMultiplier);
+            });
+        });
+
         saveData();
         loadDailyRecords();
     }
+
     /* =====================================================
        기본 동그라미 계산
-       O = 1개
-       A = 0.5개
-       X = 0개
+       O = 1개, A = 0.5개, X = 0개 (× 배수)
     ===================================================== */
-    function calculateBaseO(
-        className,
-        name
-    ) {
-        let totalO = 0;
-        let totalA = 0;
+    function calculateBaseO(className, name) {
+        let total = 0;
+
         for (let date in records) {
-            if (
-                records[date][className] &&
-                records[date][className][name]
-            ) {
-                if (
-                    records[date]
-                        [className]
-                        [name] === 'O'
-                ) {
-                    totalO++;
-                }
-                if (
-                    records[date]
-                        [className]
-                        [name] === 'A'
-                ) {
-                    totalA++;
+            if (records[date][className] && records[date][className][name]) {
+                const status = records[date][className][name];
+                const mult = getMultiplier(date, className, name);
+
+                if (status === 'O') {
+                    total += 1 * mult;
+                } else if (status === 'A') {
+                    total += 0.5 * mult;
                 }
             }
         }
-        return totalO + (totalA * 0.5);
+
+        return total;
     }
+
     /* =====================================================
-       실제 현재 동그라미 계산
-       기본 동그라미
-       +
-       상품교환 조정값
+       실제 현재 동그라미 = 기본 + 상품교환 조정값
     ===================================================== */
-    function calculateCurrentO(
-        className,
-        name
-    ) {
-        const baseO =
-            calculateBaseO(
-                className,
-                name
-            );
+    function calculateCurrentO(className, name) {
+        const baseO = calculateBaseO(className, name);
+
         if (!deductions[className]) {
             deductions[className] = {};
         }
-        const adjustment =
-            deductions[className][name] || 0;
+
+        const adjustment = deductions[className][name] || 0;
         return baseO + adjustment;
     }
+
     /* =====================================================
-       🎁 상품교환
-       숫자 입력
+       🎁 상품교환 (1개 단위)
        [차감] → 입력한 숫자만큼 차감
        [추가] → 입력한 숫자만큼 추가
        [취소] → 팝업 닫기
     ===================================================== */
-    function exchangeO(
-        className,
-        name
-    ) {
-        const currentO =
-            calculateCurrentO(
-                className,
-                name
-            );
+    function exchangeO(className, name) {
+        const currentO = calculateCurrentO(className, name);
         const displayCurrent =
-            currentO % 1 === 0
-                ? currentO
-                : currentO.toFixed(1);
-        /* 팝업 배경 */
-        const overlay =
-            document.createElement('div');
-        overlay.className =
-            'exchange-modal-overlay';
-        /* 팝업 */
-        const modal =
-            document.createElement('div');
-        modal.className =
-            'exchange-modal';
+            currentO % 1 === 0 ? currentO : currentO.toFixed(1);
+
+        const overlay = document.createElement('div');
+        overlay.className = 'exchange-modal-overlay';
+
+        const modal = document.createElement('div');
+        modal.className = 'exchange-modal';
+
         modal.innerHTML = `
             <h3 style="margin-top:0;">
                 🎁 상품교환
@@ -1311,19 +1255,17 @@
             ">
                 차감하거나 추가할 동그라미 수를 입력하세요.
             </p>
-            <!-- 숫자 입력창만 남김 -->
             <div class="exchange-input-row">
                 <input
                     type="number"
                     id="exchangeAmountInput"
                     class="exchange-input"
-                    min="0.5"
-                    step="0.5"
+                    min="1"
+                    step="1"
                     value="1"
-                    inputmode="decimal"
+                    inputmode="numeric"
                 >
             </div>
-            <!-- 차감 / 추가 / 취소 -->
             <div class="exchange-action-row">
                 <button
                     type="button"
@@ -1345,62 +1287,38 @@
                 </button>
             </div>
         `;
+
         overlay.appendChild(modal);
         document.body.appendChild(overlay);
-        const input =
-            document.getElementById(
-                'exchangeAmountInput'
-            );
-        const subtractBtn =
-            document.getElementById(
-                'exchangeSubtractBtn'
-            );
-        const addBtn =
-            document.getElementById(
-                'exchangeAddBtn'
-            );
-        const cancelBtn =
-            document.getElementById(
-                'exchangeCancelBtn'
-            );
+
+        const input = document.getElementById('exchangeAmountInput');
+        const subtractBtn = document.getElementById('exchangeSubtractBtn');
+        const addBtn = document.getElementById('exchangeAddBtn');
+        const cancelBtn = document.getElementById('exchangeCancelBtn');
+
         input.focus();
         input.select();
-        /* 팝업 닫기 */
+
         function closeModal() {
             overlay.remove();
         }
-        /* =====================================================
-           상품교환 실제 처리
-        ===================================================== */
-        function applyExchange(
-            amount,
-            isAddition
-        ) {
-            amount =
-                parseFloat(amount);
+
+        function applyExchange(amount, isAddition) {
+            amount = Number(amount);
+
             if (
                 isNaN(amount) ||
-                amount <= 0
+                amount <= 0 ||
+                !Number.isInteger(amount)
             ) {
-                alert(
-                    "0보다 큰 숫자를 입력해주세요!"
-                );
+                alert("1 이상의 정수(1, 2, 3...)를 입력해주세요!");
                 input.focus();
                 return;
             }
-            /*
-             * 추가:
-             * 현재 동그라미 + 입력값
-             *
-             * 차감:
-             * 현재 동그라미 - 입력값
-             */
-            const adjustment =
-                isAddition
-                    ? amount
-                    : -amount;
-            const newO =
-                currentO + adjustment;
+
+            const adjustment = isAddition ? amount : -amount;
+            const newO = currentO + adjustment;
+
             /* 차감 결과가 0보다 작으면 안 됨 */
             if (newO < 0) {
                 alert(
@@ -1409,126 +1327,67 @@
                 );
                 return;
             }
+
             if (!deductions[className]) {
                 deductions[className] = {};
             }
-            /*
-             * 기본 동그라미와
-             * 상품교환 조정값을 분리해서 저장
-             */
-            const baseO =
-                calculateBaseO(
-                    className,
-                    name
-                );
-            deductions[className][name] =
-                newO - baseO;
+
+            /* 기본 동그라미와 상품교환 조정값을 분리해서 저장 */
+            const baseO = calculateBaseO(className, name);
+            deductions[className][name] = newO - baseO;
+
             saveData();
             closeModal();
             loadDailyRecords();
+
             if (isAddition) {
-                alert(
-                    `${amount}개를 추가했습니다! 🎁`
-                );
+                alert(`${amount}개를 추가했습니다! 🎁`);
             } else {
-                alert(
-                    `${amount}개를 차감했습니다! 🎁`
-                );
+                alert(`${amount}개를 차감했습니다! 🎁`);
             }
         }
-        /* =====================================================
-           [차감] 버튼
-        ===================================================== */
-        subtractBtn.addEventListener(
-            'click',
-            function() {
-                applyExchange(
-                    input.value,
-                    false
-                );
+
+        subtractBtn.addEventListener('click', function() {
+            applyExchange(input.value, false);
+        });
+
+        addBtn.addEventListener('click', function() {
+            applyExchange(input.value, true);
+        });
+
+        cancelBtn.addEventListener('click', closeModal);
+
+        input.addEventListener('keydown', function(event) {
+            /* Enter → 숫자만큼 차감 */
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                applyExchange(input.value, false);
             }
-        );
-        /* =====================================================
-           [추가] 버튼
-        ===================================================== */
-        addBtn.addEventListener(
-            'click',
-            function() {
-                applyExchange(
-                    input.value,
-                    true
-                );
+            /* Escape → 취소 */
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                closeModal();
             }
-        );
-        /* =====================================================
-           [취소] 버튼
-        ===================================================== */
-        cancelBtn.addEventListener(
-            'click',
-            closeModal
-        );
-        /* =====================================================
-           키보드 입력
-        ===================================================== */
-        input.addEventListener(
-            'keydown',
-            function(event) {
-                /*
-                 * Enter
-                 * → 숫자만큼 차감
-                 */
-                if (
-                    event.key === 'Enter'
-                ) {
-                    event.preventDefault();
-                    applyExchange(
-                        input.value,
-                        false
-                    );
-                }
-                /*
-                 * Escape
-                 * → 취소
-                 */
-                if (
-                    event.key === 'Escape'
-                ) {
-                    event.preventDefault();
-                    closeModal();
-                }
+        });
+
+        /* 팝업 바깥쪽 클릭 */
+        overlay.addEventListener('click', function(event) {
+            if (event.target === overlay) {
+                closeModal();
             }
-        );
-        /* =====================================================
-           팝업 바깥쪽 클릭
-        ===================================================== */
-        overlay.addEventListener(
-            'click',
-            function(event) {
-                if (
-                    event.target === overlay
-                ) {
-                    closeModal();
-                }
-            }
-        );
+        });
     }
+
     /* =====================================================
        데이터 저장
     ===================================================== */
     function saveData() {
-        localStorage.setItem(
-            'meal_v2_classes',
-            JSON.stringify(classData)
-        );
-        localStorage.setItem(
-            'meal_v2_records',
-            JSON.stringify(records)
-        );
-        localStorage.setItem(
-            'meal_v2_deductions',
-            JSON.stringify(deductions)
-        );
+        localStorage.setItem('meal_v2_classes', JSON.stringify(classData));
+        localStorage.setItem('meal_v2_records', JSON.stringify(records));
+        localStorage.setItem('meal_v2_deductions', JSON.stringify(deductions));
+        localStorage.setItem('meal_v2_multipliers', JSON.stringify(multipliers));
     }
+
     /* =====================================================
        전체 데이터 초기화
     ===================================================== */
@@ -1539,27 +1398,24 @@
                 "(이 작업은 되돌릴 수 없습니다!)"
             )
         ) {
-            localStorage.removeItem(
-                'meal_v2_classes'
-            );
-            localStorage.removeItem(
-                'meal_v2_records'
-            );
-            localStorage.removeItem(
-                'meal_v2_deductions'
-            );
+            localStorage.removeItem('meal_v2_classes');
+            localStorage.removeItem('meal_v2_records');
+            localStorage.removeItem('meal_v2_deductions');
+            localStorage.removeItem('meal_v2_multipliers');
+
             classData = {};
             records = {};
             deductions = {};
-            document.getElementById(
-                'studentInput'
-            ).value = "";
+            multipliers = {};
+            activeMultiplier = 1;
+
+            document.getElementById('studentInput').value = "";
             showSetupSection();
         }
     }
+
     /* =====================================================
-       이름 등에 특수문자가 들어가도
-       onclick이 깨지지 않도록 처리
+       이름 등에 특수문자가 들어가도 onclick이 깨지지 않도록 처리
     ===================================================== */
     function escapeForAttribute(value) {
         return String(value)
